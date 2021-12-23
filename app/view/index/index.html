@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <title>应用总览</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="__PACKAGE__/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="__PACKAGE__/layuiadmin/style/admin.css">
+    <link rel="stylesheet" href="__CSS__/index.css">
+</head>
+
+<body>
+    <div class="layui-container">
+
+        <div class="header">
+            <div class="index" admin-event="url" url="{:url('/')}">首页</div>
+            <div class="title">应用总览</div>
+            <div class="logout" admin-event="get" url="{:url('logout')}">退出登录</div>
+        </div>
+
+        <div class="layui-inline">
+            <label class="layui-form-label">选择日期</label>
+            <div class="layui-input-inline">
+                <input type="text" value="{$date}" class="layui-input date">
+            </div>
+        </div>
+
+        <div class="layui-fluid">
+
+            <!-- 概览分析 -->
+            <div class="layui-row layui-col-space15 frame">
+
+                <blockquote class="layui-elem-quote overview-title">概览分析</blockquote>
+
+                <div class="layui-col-sm6 layui-col-md3">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            <center>请求数</center>
+                        </div>
+                        <div class="layui-card-body layuiadmin-card-list">
+                            <center>
+                                <p class="layuiadmin-big-font">
+                                    {$totalStatistic.count}
+                                </p>
+                            </center>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-col-sm6 layui-col-md3">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            <center>平均响应时间</center>
+                        </div>
+                        <div class="layui-card-body layuiadmin-card-list">
+                            <center>
+                                <p class="layuiadmin-big-font">
+                                    {$totalStatistic.averageCost}ms
+                                </p>
+                            </center>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-col-sm6 layui-col-md3">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            <center>成功数</center>
+                        </div>
+                        <div class="layui-card-body layuiadmin-card-list">
+                            <center>
+                                <p class="layuiadmin-big-font">
+                                    {$totalStatistic.successCount}
+                                </p>
+                            </center>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-col-sm6 layui-col-md3">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            <center>异常数</center>
+                        </div>
+                        <div class="layui-card-body layuiadmin-card-list">
+                            <center>
+                                <p class="layuiadmin-big-font">
+                                    {$totalStatistic.errorCount}
+                                </p>
+                            </center>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="line"></div>
+
+            <!-- 应用监控 -->
+            <div class="layui-row frame">
+
+                <blockquote class="layui-elem-quote">应用监控</blockquote>
+
+                <table class="layui-table" lay-filter="projectStatistic">
+                    <thead>
+                        <tr>
+                            <th lay-data="{field:'project',sort:true,minWidth:100}">应用</th>
+                            <th lay-data="{field:'count',sort:true,minWidth:90}">请求数</th>
+                            <th lay-data="{field:'averageCost',sort:true,minWidth:102}">响应时间</th>
+                            <th lay-data="{field:'successCount',sort:true,minWidth:90}">成功数</th>
+                            <th lay-data="{field:'errorCount',sort:true,minWidth:90}">异常数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach name='projectStatistic' item="vo"}
+                        <tr>
+                            <td>
+                                <a href="{:url('/project',['project'=>$vo.project,'date'=>$date])}" target="_blank"
+                                    style="color: red;">
+                                    <span class="layui-elem-project"></span>
+                                    {$vo.project}
+                                </a>
+                            </td>
+                            <td>{$vo.count}</td>
+                            <td>{$vo.averageCost}ms</td>
+                            <td>{$vo.successCount}</td>
+                            <td>{$vo.errorCount}</td>
+                        </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
+
+            </div>
+
+
+            <!-- 调用统计 -->
+            <div class="layui-row frame">
+
+                <blockquote class="layui-elem-quote">调用统计</blockquote>
+
+                <table class="layui-table" lay-filter="transferStatistic">
+                    <thead>
+                        <tr>
+                            <th lay-data="{field:'transfer',sort:true,minWidth:320}">调用</th>
+                            <th lay-data="{field:'project',sort:true,minWidth:100}">应用</th>
+                            <th lay-data="{field:'count',sort:true,minWidth:90}">请求数</th>
+                            <th lay-data="{field:'averageCost',sort:true,minWidth:102}">平均耗时</th>
+                            <th lay-data="{field:'error',sort:true,minWidth:90}">异常数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach name='transferStatistic' item="vo"}
+                        <tr>
+                            <td>{$vo.transfer}</td>
+                            <td>{$vo.project}</td>
+                            <td>{$vo.count}</td>
+                            <td>{$vo.averageCost}ms</td>
+                            <td>{$vo.error}</td>
+                        </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
+
+            </div>
+
+
+            <!-- IP统计 -->
+            <div class="layui-row frame">
+
+                <blockquote class="layui-elem-quote">IP统计</blockquote>
+
+                <table class="layui-table" lay-filter="ipStatistic">
+                    <thead>
+                        <tr>
+                            <th lay-data="{field:'ip',sort:true,minWidth:130}">IP</th>
+                            <th lay-data="{field:'project',sort:true,minWidth:100}">应用</th>
+                            <th lay-data="{field:'count',sort:true,minWidth:90}">请求数</th>
+                            <th lay-data="{field:'averageCost',sort:true,minWidth:102}">平均耗时</th>
+                            <th lay-data="{field:'error',sort:true,minWidth:90}">异常数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach name='ipStatistic' item="vo"}
+                        <tr>
+                            <td>{$vo.ip}</td>
+                            <td>{$vo.project}</td>
+                            <td>{$vo.count}</td>
+                            <td>{$vo.averageCost}ms</td>
+                            <td>{$vo.error}</td>
+                        </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
+
+            </div>
+
+
+            <!-- 调用记录 -->
+            <div class="layui-row frame">
+
+                <blockquote class="layui-elem-quote">调用记录</blockquote>
+
+                <table id="tracingList" lay-filter="tracingList"></table>
+
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>
+<!--JS引用-->
+<script src="__JS__/jquery.min.js"></script>
+<script src="__PACKAGE__/layui/layui.js"></script>
+<script src="__JS__/index.js"></script>
+<script>
+    // 日期选择
+    laydate.render({
+        elem: ".date",
+        type: 'date',
+        trigger: 'click',
+        format: 'yyyy-MM-dd',
+        done: function (value, date, endDate) {
+            window.location.href = "{:url('/')}?date=" + value;
+        }
+    })
+
+    // 固定块
+    util.fixbar({
+        top: true,
+        css: { bottom: 50 },
+    });
+
+    // 渲染 应用监控 列表
+    table.init('projectStatistic', {
+        limit: Number.MAX_VALUE,
+        height: 500,
+    });
+    // 渲染 调用统计 列表
+    table.init('transferStatistic', {
+        limit: Number.MAX_VALUE,
+        height: 500,
+    });
+    // 渲染 IP统计 列表
+    table.init('ipStatistic', {
+        limit: Number.MAX_VALUE,
+        height: 500,
+    });
+
+    // 调用记录
+    table.render({
+        elem: '#tracingList',
+        even: true,
+        height: 500,
+        loading: true,
+        url: "{:url('/tracing_list',['date'=>$date])}",
+        method: 'POST',
+        page: true,
+        limit: 10,
+        parseData: function (params) {
+            return {
+                "code": params.code,
+                "msg": params.msg,
+                "count": params.data.total,
+                "data": params.data.tracingList
+            };
+        },
+        request: {
+            pageName: 'page',
+            limitName: 'limit'
+        },
+        response: {
+            statusCode: 200
+        },
+        cols: [[
+            { field: 'time', title: '调用时间', width: 160},
+            { field: 'transfer', title: '调用入口', minWidth: 320 },
+            { field: 'ip', title: 'IP', width: 150 },
+            { field: 'project', title: '应用', width: 150 },
+            { field: 'costTime', title: '耗时', width: 120, templet: '#costTime' },
+            { field: 'success', title: '状态', width: 60, templet: '#success' },
+            { field: 'trace', title: 'trace', width: 130, templet: '#trace' }
+        ]]
+    });
+
+    // 查看详情
+    $('body').on('click', '.details', function () {
+        var details = $(this).attr('details');
+
+        top.layer.open({
+            type: 1,
+            title: false,
+            anim: 5,
+            scrollbar: false,
+            resize: false,
+            move: false,
+            offset: 'auto',
+            area: ['80%', '80%'],
+            skin: 'open-skin',
+            content: `<pre class="layui-code" lay-title="详细信息" lay-skin="notepad">` + details + `</pre>`,
+            success: function (layero, index) {
+                top.layui.code({
+                    elem: 'pre'
+                });
+            }
+        });
+    });
+</script>
+<script type="text/html" id="success">
+    {{#  if(d.success === 1){ }}
+    <i class="layui-icon layui-icon-circle-dot" style="font-size: 20px; color: #7ecf51;"></i>
+    {{#  } else { }}
+    <i class="layui-icon layui-icon-circle-dot" style="font-size: 20px; color: #e16757;"></i>
+    {{#  } }}
+</script>
+<script type="text/html" id="costTime">
+    {{d.costTime}}ms
+</script>
+<script type="text/html" id="trace">
+    <a href="javascript:;" style="color: #0066cc;" class="details" details='{{d.details}}'>{{d.trace}}</a>
+</script>

@@ -1,0 +1,30 @@
+{
+	"name": "hsk99/transfer-statistics",
+	"type": "project",
+	"homepage": "http://hsk99.com.cn",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "hsk99",
+			"email": "3024186605@qq.com",
+			"homepage": "http://hsk99.com.cn"
+		}
+	],
+	"require": {
+		"php": ">=7.3",
+		"workerman/webman-framework": "^1.0",
+		"monolog/monolog": "^2.0",
+		"topthink/think-template": "^2.0",
+		"illuminate/redis": "^8.0",
+		"symfony/cache": "^5.2",
+		"guzzlehttp/guzzle": "^7.4"
+	},
+	"autoload": {
+		"psr-4": {
+			"": "./"
+		},
+		"files": [
+			"./support/helpers.php"
+		]
+	}
+}
