@@ -36,6 +36,33 @@ class ThinkOrm implements Bootstrap
 
         // 监听SQL，并记录日志
         Db::listen(function ($sql, $runtime, $master) {
+            switch (true) {
+                case is_numeric($runtime):
+                    $transfer = $sql;
+                    $cost     = $runtime;
+                    break;
+                case !is_numeric($runtime) && 'CONNECT' === substr($sql, 0, 7):
+                    @preg_match("/UseTime:([0-9]+(\\.[0-9]+)?|[0-9]+(\\.[0-9]+))/", $sql, $result);
+                    if (count($result) > 1) {
+                        $transfer = substr($sql, strpos($sql, "s ] ") + 4);
+                        $cost     = $result[1];
+                    } else {
+                        $transfer = $sql;;
+                        $cost     = 0;
+                    }
+                    break;
+                default:
+                    $transfer = $sql;;
+                    $cost     = 0;
+                    break;
+            }
+            \expand\StatisticClient::report('', 'testSql', '127.0.0.1', $transfer, true, 1, json_encode([
+                'sql'     => $sql,
+                'runtime' => $cost . 's',
+                'master'  => $master,
+            ], 320), $cost);
+
+
             $time = microtime(true);
 
             if ($sql === 'select 1') {

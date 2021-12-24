@@ -17,15 +17,19 @@
 <body>
 
     <div class="layui-tab layui-tab-brief frame" style="padding: 0;margin: 0;position: relative;">
-        <div style="position: absolute;
+        <a style="position: absolute;
         right: 27px;
         top: 10px;
         font-size: 18px;
-        color: #6fbe85;">
+        color: #6fbe85;
+        width: 550px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;" href="javascript:;" title="{$ip}">
             {$ip}
-        </div>
+        </a>
 
-        <ul class="layui-tab-title">
+        <ul class="layui-tab-title" style="display: inline-block;">
             <li class="layui-this">统计分析</li>
             <li>调用记录</li>
         </ul>

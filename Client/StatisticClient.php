@@ -71,16 +71,21 @@ class StatisticClient
      * @param boolean $success
      * @param integer $code
      * @param string $details
+     * @param float $cost
      *
      * @return boolean
      */
-    public static function report(string $unique, string $project, string $ip, string $transfer, bool $success, int $code, string $details): bool
+    public static function report(string $unique = '', string $project, string $ip, string $transfer, bool $success, int $code, string $details, float $cost = 0): bool
     {
         $finishTime = microtime(true);
         $startTime  = self::$timeMap[md5($project . $ip . $transfer . $unique)] ?? microtime(true);
         unset(self::$timeMap[md5($project . $ip . $transfer . $unique)]);
 
         $costTime = $finishTime - $startTime;
+
+        if (empty($unique) && isset($cost)) {
+            $costTime = $cost;
+        }
 
         $binData = self::encode($project, $ip, $transfer, $costTime, $success, $code, $details);
 

@@ -85,6 +85,7 @@ class Statistic implements MiddlewareInterface
             'session'         => $request->session()->all() ?? [],               // 请求session
             'response_code'   => $response->getStatusCode() ?? '',               // 响应码
             'response_header' => $response->getHeaders() ?? [],                  // 响应头
+            'response_body'   => $success ?: (string)$response->rawBody(),       // 响应数据（发生异常）
         ];
         // 数据上报
         StatisticClient::report($unique, 'project', $ip, $transfer, $success, $code, json_encode($details, 320));
@@ -127,4 +128,36 @@ $details = json_encode([
 ], 320);  // 详情（JSON格式）
 StatisticClient::report($unique, $project, $ip, $transfer, $success, $code, $details);
 
+```
+
+3、SQL监控（ThinkORM 示例）
+
+```
+\think\facade\Db::listen(function ($sql, $runtime, $master) {
+    switch (true) {
+        case is_numeric($runtime):
+            $transfer = $sql;
+            $cost     = $runtime;
+            break;
+        case !is_numeric($runtime) && 'CONNECT' === substr($sql, 0, 7):
+            @preg_match("/UseTime:([0-9]+(\\.[0-9]+)?|[0-9]+(\\.[0-9]+))/", $sql, $result);
+            if (count($result) > 1) {
+                $transfer = substr($sql, strpos($sql, "s ] ") + 4);
+                $cost     = $result[1];
+            } else {
+                $transfer = $sql;;
+                $cost     = 0;
+            }
+            break;
+        default:
+            $transfer = $sql;;
+            $cost     = 0;
+            break;
+    }
+    StatisticClient::report('', 'projectSql', '127.0.0.1', $transfer, true, 1, json_encode([
+        'sql'     => $sql,
+        'runtime' => $cost . 's',
+        'master'  => $master,
+    ], 320), $cost);
+});
 ```
