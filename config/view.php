@@ -21,14 +21,7 @@ use support\view\ThinkPHP;
 return [
     'handler' => ThinkPHP::class,
     'options' => [
-        'default_filter'     => '',
-        'tpl_cache'          => false,
-        'tpl_replace_string' => [
-            '__STATIC__'  => '/static',
-            '__IMAGES__'  => '/static/images',
-            '__JS__'      => '/static/js',
-            '__CSS__'     => '/static/css',
-            '__PACKAGE__' => '/static/package',
-        ]
+        'default_filter' => '',
+        'tpl_cache'      => false,
     ]
 ];

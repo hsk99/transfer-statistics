@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title> {:get_system('title', 'TransferStatistics')} </title>
+    <!-- 依 赖 样 式 -->
+    <link rel="stylesheet" href="/static/component/pear/css/pear.css" />
+    <!-- 加 载 样 式 -->
+    <link rel="stylesheet" href="/static/admin/css/loader.css" />
+    <!-- 布 局 样 式 -->
+    <link rel="stylesheet" href="/static/admin/css/admin.css" />
+    <script>
+        if (window != top) { top.location.href = location.href; }
+    </script>
+</head>
+<!-- 结 构 代 码 -->
+
+<body class="layui-layout-body pear-admin">
+    <!-- 布 局 框 架 -->
+    <div class="layui-layout layui-layout-admin">
+        <!-- 顶 部 样 式 -->
+        <div class="layui-header">
+            <!-- 菜 单 顶 部 -->
+            <div class="layui-logo">
+                <!-- 图 标 -->
+                <img class="logo">
+                <!-- 标 题 -->
+                <span class="title"></span>
+            </div>
+            <!-- 顶 部 左 侧 功 能 -->
+            <ul class="layui-nav layui-layout-left">
+                <li class="collapse layui-nav-item"><a href="javascript:;"
+                        class="layui-icon layui-icon-shrink-right"></a></li>
+                <li class="refresh layui-nav-item"><a href="javascript:;" class="layui-icon layui-icon-refresh-1"
+                        loading=600></a>
+                </li>
+            </ul>
+            <!-- 多 系 统 菜 单 -->
+            <div id="control" class="layui-layout-control"></div>
+            <!-- 顶 部 右 侧 菜 单 -->
+            <ul class="layui-nav layui-layout-right" lay-filter="layui_nav_right">
+                <li class="layui-nav-item layui-hide-xs"><a href="javascript:;"
+                        class="menuSearch layui-icon layui-icon-search"></a></li>
+                <li class="layui-nav-item layui-hide-xs"><a href="javascript:;"
+                        class="fullScreen layui-icon layui-icon-screen-full"></a></li>
+                <li class="layui-nav-item layui-hide-xs message"></li>
+                <li class="layui-nav-item user">
+                    <!-- 头 像 -->
+                    <a href="javascript:;">
+                        <img src="/static/admin/images/avatar.jpg" class="layui-nav-img">
+                    </a>
+                    <!-- 功 能 菜 单 -->
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="javascript:void(0);" class="cache">
+                                清理缓存
+                            </a>
+                        </dd>
+                        <dd>
+                            <a href="javascript:void(0);" class="logout">
+                                退出登录
+                            </a>
+                        </dd>
+                    </dl>
+                </li>
+                <!-- 主 题 配 置 -->
+                <li class="layui-nav-item setting"><a href="javascript:;"
+                        class="layui-icon layui-icon-more-vertical"></a></li>
+            </ul>
+        </div>
+        <!-- 侧 边 区 域 -->
+        <div class="layui-side layui-bg-black">
+            <!-- 菜 单 顶 部 -->
+            <div class="layui-logo">
+                <!-- 图 标 -->
+                <img class="logo">
+                <!-- 标 题 -->
+                <span class="title"></span>
+            </div>
+            <!-- 菜 单 内 容 -->
+            <div class="layui-side-scroll">
+                <div id="sideMenu"></div>
+            </div>
+        </div>
+        <!-- 视 图 页 面 -->
+        <div class="layui-body">
+            <!-- 内 容 页 面 -->
+            <div id="content"></div>
+        </div>
+        <!-- 页脚 -->
+        <div class="layui-footer layui-text">
+            <span class="left">
+                <span>
+                    仓库：<a href="https://github.com/hsk99" target="_blank">hsk99</a>
+                </span>
+            </span>
+            <span class="center"></span>
+            <span class="right"></span>
+        </div>
+        <!-- 遮 盖 层 -->
+        <div class="pear-cover"></div>
+        <!-- 加 载 动 画 -->
+        <div class="loader-main">
+            <!-- 动 画 对 象 -->
+            <div class="loader"></div>
+        </div>
+    </div>
+    <!-- 移 动 端 便 捷 操 作 -->
+    <div class="pear-collapsed-pe collapse">
+        <a href="javascript:;" class="layui-icon layui-icon-shrink-right"></a>
+    </div>
+    <!-- 依 赖 脚 本 -->
+    <script src="/static/component/layui/layui.js"></script>
+    <script src="/static/component/pear/pear.js"></script>
+    <!-- 框 架 初 始 化 -->
+    <script>
+        layui.use(['admin', 'jquery', 'layer', 'element', 'toast'], function () {
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var layelem = layui.element;
+            var admin = layui.admin;
+            var toast = layui.toast;
+
+            // 框 架 初 始 化
+            admin.render({
+                "logo": {
+                    "title": "{:get_system('title', 'TransferStatistics')}",
+                    "image": "{:get_system('logo', '/favicon.ico')}"
+                },
+                "menu": {
+                    "data": "/{:request()->app}/index/menu",
+                    "accordion": true,
+                    "control": false,
+                    "select": "0",
+                },
+                "tab": {
+                    "muiltTab": true,
+                    "keepState": true,
+                    "session": true,
+                    "tabMax": 30,
+                    "index": {
+                        "id": "0",
+                        "href": "/{:request()->app}/statistics/index",
+                        "title": "统计概览"
+                    }
+                },
+                "theme": {
+                    "defaultColor": "2",
+                    "defaultMenu": "dark-theme",
+                    "defaultHeader": "light-theme",
+                    "allowCustom": true,
+                    "banner": false
+                },
+                "colors": [{
+                    "id": "1",
+                    "color": "#2d8cf0",
+                    "second": "#ecf5ff"
+                },
+                {
+                    "id": "2",
+                    "color": "#36b368",
+                    "second": "#f0f9eb"
+                },
+                {
+                    "id": "3",
+                    "color": "#f6ad55",
+                    "second": "#fdf6ec"
+                }, {
+                    "id": "4",
+                    "color": "#f56c6c",
+                    "second": "#fef0f0"
+                }, {
+                    "id": "5",
+                    "color": "#3963bc",
+                    "second": "#ecf5ff"
+                }
+                ],
+                "other": {
+                    "keepLoad": 100,
+                    "autoHead": true
+                },
+                "header": {
+                    message: false
+                }
+            });
+
+            layelem.on('nav(layui_nav_right)', function (elem) {
+                if ($(elem).hasClass('logout')) {
+                    layer.confirm('确定退出登录吗?', function (index) {
+                        layer.close(index);
+                        $.ajax({
+                            url: '/{:request()->app}/login/logout',
+                            type: "POST",
+                            dataType: "json",
+                            success: function (res) {
+                                if (res.code == 200) {
+                                    layer.msg(res.msg, {
+                                        icon: 1
+                                    });
+                                    setTimeout(function () {
+                                        location.href = '/{:request()->app}/login/index';
+                                    }, 333)
+                                }
+                            }
+                        });
+                    });
+                } else if ($(elem).hasClass('cache')) {
+                    $.post('/{:request()->app}/index/cache',
+                        function (data) {
+                            layer.msg(data.msg, { time: 1500 });
+                            location.reload()
+                        });
+                }
+            });
+
+            $('.layui-logo').on('click', function () {
+                parent.layui.admin.jump(0, "统计概览", "/{:request()->app}/statistics/index");
+                parent.layui.admin.refresh(0);
+            });
+        })
+    </script>
+</body>
+
+</html>

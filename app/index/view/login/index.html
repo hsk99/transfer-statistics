@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<title> {:get_system('title', 'TransferStatistics')} </title>
+	<!-- 样 式 文 件 -->
+	<link rel="stylesheet" href="/static/component/pear/css/pear.css" />
+	<link rel="stylesheet" href="/static/admin/css/other/login.css" />
+	<style>
+		.logo {
+			width: 40px !important;
+			margin-top: 20px !important;
+			margin-bottom: 10px !important;
+			margin-left: 10px !important;
+		}
+
+		.title {
+			margin-left: 10px !important;
+		}
+	</style>
+</head>
+<!-- 代 码 结 构 -->
+
+<body background="{:get_system('bg', '/static/admin/images/background.svg')}" style="background-size: cover;">
+	<form class="layui-form" action="javascript:void(0);">
+		<div class="layui-form-item">
+			<img class="logo" src="{:get_system('logo', '/favicon.ico')}" />
+			<div class="title">{:get_system('title', 'TransferStatistics')}</div>
+			<div class="desc">
+				{:get_system('desc', '应 用 监 控 系 统')}
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<input placeholder="账 户" type="text" name="username" hover class="layui-input" />
+		</div>
+		<div class="layui-form-item">
+			<input placeholder="密 码" type="password" name="password" hover class="layui-input" />
+		</div>
+		{if condition="1 == get_system('login_captcha')"}
+		<div class="layui-form-item">
+			<input placeholder="验证码 : " type="number" maxlength="4" name="captcha" hover
+				class="code layui-input layui-input-inline" />
+			<img id="codeimg" class="codeImage" style="max-width: 108px;" />
+		</div>
+		{/if}
+		<div class="layui-form-item">
+			<input type="checkbox" name="remember" title="7天内自动登录" lay-skin="primary" checked>
+		</div>
+		<div class="layui-form-item">
+			<button class="pear-btn pear-btn-success login" lay-submit lay-filter="login">
+				登 入
+			</button>
+		</div>
+	</form>
+	<!-- 资 源 引 入 -->
+	<script src="/static/component/layui/layui.js"></script>
+	<script src="/static/component/pear/pear.js"></script>
+	<script>
+		layui.use(['form', 'layer', 'jquery', 'element'], function () {
+			var $ = layui.jquery
+				, layer = layui.layer
+				, element = layui.element
+				, form = layui.form;
+			// 登 录 提 交
+			form.on('submit(login)', function (data) {
+				layer.load();
+				$.ajax({
+					type: "POST",
+					data: data.field,
+					success: function (res) {
+						layer.closeAll('loading');
+						if (res.code == 200) {
+							layer.msg(res.msg, { icon: 1, time: 1000 }, function () {
+								location.href = '/{:request()->app}';
+							})
+						} else {
+							layer.msg(res.msg, { icon: 2, time: 1000 }, function () {
+								initCode();
+							})
+						}
+					}
+				});
+				return false;
+			});
+			initCode();
+			function initCode() {
+				$('#codeimg').attr("src", "/{:request()->app}/login/verify?data=" + new Date().getTime());
+			}
+			$('#codeimg').on('click', function () {
+				initCode();
+			});
+		})
+	</script>
+</body>
+
+</html>

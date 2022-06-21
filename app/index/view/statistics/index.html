@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>统计概览</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/component/pear/css/pear.css" />
+    <link rel="stylesheet" href="/static/admin/css/other/console1.css" />
+    <style>
+        .open-skin {
+            background-color: #3f3f3f !important;
+        }
+    </style>
+</head>
+
+<body class="pear-container">
+    <div>
+        <div class="layui-row layui-col-space10">
+            <div class="layui-col-xs12 layui-col-md3">
+                <div class="layui-card top-panel">
+                    <div class="layui-card-header">对接应用</div>
+                    <div class="layui-card-body">
+                        <div class="layui-row layui-col-space5">
+                            <div class="layui-col-xs8 layui-col-md8 top-panel-number" style="color: #28333E;"
+                                id="project_count">
+                                0
+                            </div>
+                            <div class="layui-col-xs4 layui-col-md4 top-panel-tips">
+                                <svg t="1655712995915" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                                    xmlns="http://www.w3.org/2000/svg" p-id="4148" width="200" height="200">
+                                    <path
+                                        d="M761.8048 943.8208H275.5072c-107.264 0-194.2016-86.9376-194.2016-194.2016V263.3728c0-107.264 86.9376-194.2016 194.2016-194.2016h486.2464c107.264 0 194.2016 86.9376 194.2016 194.2016v486.2464c0.0512 107.264-86.8864 194.2016-194.1504 194.2016z"
+                                        fill="#4FE8CB" p-id="4149" data-spm-anchor-id="a313x.7781069.0.i11" class="">
+                                    </path>
+                                    <path
+                                        d="M773.7856 297.2672l-195.328-115.2512c-36.3008-21.4528-81.7152-21.8624-118.4256-1.1264L262.5536 292.4032c-36.7104 20.736-59.8016 59.8016-60.16 101.9904l-2.1504 226.816c-0.4096 42.1888 21.9136 81.664 58.2144 103.1168l195.328 115.2512c18.4832 10.9056 39.3216 16.384 60.2112 16.384 20.0704 0 40.192-5.0688 58.2144-15.2576l84.6848-47.8208a25.58464 25.58464 0 1 0-25.1904-44.544l-84.6848 47.8208c-20.8384 11.776-46.592 11.52-67.2256-0.6656l-195.328-115.2512a67.4816 67.4816 0 0 1-33.0752-58.5216l2.1504-226.816c0.2048-23.9616 13.312-46.1312 34.1504-57.9072l197.4784-111.5136c20.8384-11.776 46.592-11.52 67.2256 0.6656l195.328 115.2512a67.4816 67.4816 0 0 1 33.0752 58.5216l-2.1504 226.7648c-0.2048 23.9616-13.312 46.1312-34.1504 57.9072a25.6 25.6 0 0 0-9.6768 34.8672 25.6 25.6 0 0 0 34.8672 9.6768c36.7104-20.736 59.8016-59.8016 60.16-101.9904l2.1504-226.7648c0.4608-42.1376-21.8624-81.664-58.2144-103.1168z"
+                                        fill="#F7F8F8" p-id="4150"></path>
+                                    <path
+                                        d="M672.8192 391.2192l-157.1328 85.8112-156.16-85.76a25.63584 25.63584 0 0 0-34.7648 10.0864 25.59488 25.59488 0 0 0 10.0864 34.7648l155.648 85.504v181.0432c0 14.1312 11.4688 25.6 25.6 25.6s25.6-11.4688 25.6-25.6v-181.5552l155.5968-84.9408c12.3904-6.7584 16.9984-22.3232 10.1888-34.7648s-22.272-16.9472-34.6624-10.1888z"
+                                        fill="#F7F8F8" p-id="4151"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-xs12 layui-col-md3">
+                <div class="layui-card top-panel">
+                    <div class="layui-card-header">请求数量</div>
+                    <div class="layui-card-body">
+                        <div class="layui-row layui-col-space5">
+                            <div class="layui-col-xs8 layui-col-md8 top-panel-number" style="color: #28333E;"
+                                id="count">
+                                0
+                            </div>
+                            <div class="layui-col-xs4 layui-col-md4 top-panel-tips">
+                                <svg t="1651028839223" class="icon" viewBox="0 0 1025 1024" version="1.1"
+                                    xmlns="http://www.w3.org/2000/svg" p-id="2605" width="200" height="200">
+                                    <path
+                                        d="M942.08 665.6l0.512-90.624V141.824H269.824l-81.92 0.512C187.904 91.648 230.4 51.2 283.136 51.2h646.656c52.224 0 95.232 44.544 95.232 95.744V573.44c-1.024 38.4-30.208 92.16-82.944 92.16z m-68.608-376.32v462.336c0 50.688-41.984 89.088-94.72 89.088H482.304v72.192h179.712c13.312 0 24.064 19.456 24.064 31.744 0 13.312-11.264 28.672-24.064 28.672H209.92c-13.312 0-24.064-15.872-24.064-28.672 0-13.312 11.264-31.744 24.064-31.744h172.032v-72.192H94.72C43.008 840.192 0 802.816 0 751.104V289.28c0-50.688 41.984-95.744 94.72-95.744H778.24c52.736-0.512 95.744 44.544 95.232 95.744z m-275.456 163.328l-53.76-93.696s-16.896-15.36-28.16 3.072L504.32 389.12S321.536 317.44 278.528 504.832c0 0 48.128-108.032 195.584-51.2l-12.288 26.624s-10.752 26.112 24.576 20.48l98.816-23.04c0.512 0 22.528-6.144 12.8-25.088z m-185.856 123.392l11.776-26.624s10.752-26.112-24.576-19.968l-98.304 25.088s-22.016 6.144-11.776 25.088l56.832 91.648s16.896 15.36 27.648-3.584l11.264-26.624s184.32 67.584 222.208-120.832c-0.512 0-46.08 108.544-195.072 55.808z"
+                                        fill="#7ED3F4" p-id="2606"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-xs12 layui-col-md3">
+                <div class="layui-card top-panel">
+                    <div class="layui-card-header">成功数量</div>
+                    <div class="layui-card-body">
+                        <div class="layui-row layui-col-space5">
+                            <div class="layui-col-xs8 layui-col-md8 top-panel-number" style="color: #28333E;"
+                                id="success_count">
+                                0
+                            </div>
+                            <div class="layui-col-xs4 layui-col-md4  top-panel-tips">
+                                <svg t="1651028997557" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                                    xmlns="http://www.w3.org/2000/svg" p-id="3241" width="200" height="200">
+                                    <path
+                                        d="M512 0c282.624 0 512 229.376 512 512s-229.376 512-512 512S0 794.624 0 512 229.376 0 512 0z m347.136 269.824h-145.92l-294.912 294.912L271.36 417.792H164.864l209.92 335.872L438.784 686.08l420.352-416.256z"
+                                        fill="#91CC75" p-id="3242" data-spm-anchor-id="a313x.7781069.0.i34"
+                                        class="selected"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-xs12 layui-col-md3">
+                <div class="layui-card top-panel">
+                    <div class="layui-card-header">异常数量</div>
+                    <div class="layui-card-body">
+                        <div class="layui-row layui-col-space5">
+                            <div class="layui-col-xs8 layui-col-md8 top-panel-number" style="color: #28333E;"
+                                id="error_count">
+                                0
+                            </div>
+                            <div class="layui-col-xs4 layui-col-md4 top-panel-tips">
+                                <svg t="1651029044262" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                                    xmlns="http://www.w3.org/2000/svg" p-id="3437" width="200" height="200">
+                                    <path
+                                        d="M510.464 530.432m-465.92 0a465.92 465.92 0 1 0 931.84 0 465.92 465.92 0 1 0-931.84 0Z"
+                                        fill="#FF7070" p-id="3438" data-spm-anchor-id="a313x.7781069.0.i40"
+                                        class="selected"></path>
+                                    <path
+                                        d="M836.608 662.528l-276.992-455.68c-13.312-20.992-24.576-38.4-49.664-38.4-25.088 0-38.912 20.48-49.664 38.4l-276.992 455.68c-11.776 17.92-19.968 39.424-14.848 58.368 4.608 16.384 22.016 27.648 49.152 27.648h584.704c33.792 0 45.056-15.872 48.128-24.576 7.68-19.456-1.536-41.472-13.824-61.44zM476.16 360.96c0-18.944 15.36-33.792 33.792-33.792 18.944 0 33.792 15.36 33.792 33.792v148.992c0 18.944-15.36 33.792-33.792 33.792s-33.792-15.36-33.792-33.792V360.96z m33.792 296.448c-20.48 0-36.864-16.384-36.864-36.864s16.384-36.864 36.864-36.864 36.864 16.384 36.864 36.864-16.384 36.864-36.864 36.864z"
+                                        fill="#FFFFFF" p-id="3439"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row layui-col-space10">
+            <div class="layui-col-md9">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-tab custom-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                            <div id="projectStatistics" style="background-color:#ffffff;min-height:400px;padding: 10px">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-card">
+                    <div class="layui-card-header">调用记录</div>
+                    <div class="layui-card-body">
+                        <table id="tracingList" lay-filter="tracingList"></table>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <div class="layui-card">
+                    <div class="layui-card-header">IP（Top 10）</div>
+                    <div class="layui-card-body">
+                        <ul class="list">
+                            {foreach name='projectIpStatisticList' item="vo"}
+                            <li class="list-item">
+                                <span class="title">{$vo.ip}</span>
+                                <span class="footer">{$vo.total}</span>
+                            </li>
+                            {/foreach}
+                        </ul>
+                    </div>
+                </div>
+                <div class="layui-card">
+                    <div class="layui-card-header">调用（Top 10）</div>
+                    <div class="layui-card-body">
+                        <ul class="list">
+                            {foreach name='projectTransferStatisticList' item="vo"}
+                            <li class="list-item">
+                                <span class="title">{$vo.transfer}</span>
+                                <span class="footer">{$vo.total}</span>
+                            </li>
+                            {/foreach}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--</div>-->
+    <script src="/static/component/layui/layui.js"></script>
+    <script src="/static/component/pear/pear.js"></script>
+    <script src="/static/common/js/jquery.min.js"></script>
+    <script src="/static/common/js/echarts-5.3.2.min.js"></script>
+    <script>
+        layui.use(['count', 'table', 'topBar'], function () {
+            var count = layui.count;
+            var table = layui.table;
+
+            count.up("project_count", {
+                time: 20,
+                num: eval("(" + `{$statisticData.project_count}` + ")"),
+                regulator: 1
+            });
+            count.up("count", {
+                time: 20,
+                num: eval("(" + `{$statisticData.count}` + ")"),
+                regulator: 1
+            });
+            count.up("success_count", {
+                time: 20,
+                num: eval("(" + `{$statisticData.success_count}` + ")"),
+                regulator: 1
+            });
+            count.up("error_count", {
+                time: 20,
+                num: eval("(" + `{$statisticData.error_count}` + ")"),
+                regulator: 1
+            });
+
+
+            projectStatisticsObject = echarts.init(document.getElementById('projectStatistics'));
+            window.onresize = function () {
+                projectStatisticsObject.resize();
+            }
+            var projectStatisticChart = eval("(" + `{$projectStatisticChart}` + ")")
+            var option = {
+                backgroundColor: '#ffffff',
+                title: {
+                    text: '应用分析',
+                    left: 'center',
+                    textStyle: {
+                        fontSize: 20
+                    },
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    confine: true,
+                    axisPointer: {
+                        type: 'cross',
+                        label: {
+                            backgroundColor: '#6a7985'
+                        }
+                    },
+                    position: function (point, params, dom, rect, size) {
+                        return [point[0], '10%'];
+                    },
+                },
+                legend: {
+                    orient: 'vertical',
+                    right: '1%',
+                    data: ['请求', '成功', '异常'],
+                    textStyle: {
+                        fontSize: 12,
+                        color: '#808080'
+                    },
+                },
+                dataZoom: [{
+                    type: 'slider',
+                    height: 30
+                }],
+                grid: {
+                    top: '20%',
+                    left: '3%',
+                    right: '4%',
+                    bottom: '15%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    axisLine: {
+                        show: false
+                    },
+                    axisTick: {
+                        show: false
+                    },
+                    axisLabel: {
+                        margin: 10,
+                        textStyle: {
+                            fontSize: 14,
+                            color: 'rgba(#999)',
+                        }
+                    },
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: '#939ab6',
+                            opacity: .15
+                        }
+                    },
+                    data: projectStatisticChart.x
+                },
+                yAxis: {
+                    type: 'value',
+                    axisTick: {
+                        show: false
+                    },
+                    axisLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        margin: 10,
+                        textStyle: {
+                            fontSize: 14,
+                            color: '#999',
+                        }
+                    },
+                    splitLine: {
+                        show: false
+                    }
+                },
+                series: [
+                    {
+                        name: '请求',
+                        type: 'bar',
+                        itemStyle: {
+                            normal: {
+                                color: "rgba(84,112,198, 1)"
+                            }
+                        },
+                        data: projectStatisticChart.total
+                    },
+                    {
+                        name: '成功',
+                        type: 'bar',
+                        itemStyle: {
+                            normal: {
+                                color: "rgba(145,204,117, 1)"
+                            }
+                        },
+                        data: projectStatisticChart.success
+                    },
+                    {
+                        name: '异常',
+                        type: 'bar',
+                        itemStyle: {
+                            normal: {
+                                color: "rgba(220, 31, 31, 1)"
+                            }
+                        },
+                        data: projectStatisticChart.error
+                    }
+                ]
+            };
+            projectStatisticsObject.setOption(option);
+
+
+            // 调用记录
+            table.render({
+                elem: '#tracingList',
+                even: true,
+                height: 550,
+                loading: true,
+                url: "/{:request()->app}/tracing/list",
+                method: 'POST',
+                page: true,
+                limit: 10,
+                parseData: function (params) {
+                    return {
+                        "code": params.code,
+                        "msg": params.msg,
+                        "count": params.data.total,
+                        "data": params.data.data
+                    };
+                },
+                request: {
+                    pageName: 'page',
+                    limitName: 'limit'
+                },
+                response: {
+                    statusCode: 200
+                },
+                cols: [[
+                    {
+                        field: 'time',
+                        title: '调用时间',
+                        width: 185
+                    },
+                    {
+                        field: 'transfer',
+                        title: '调用入口',
+                        minWidth: 150
+                    },
+                    {
+                        field: 'project',
+                        title: '应用',
+                        minWidth: 150
+                    },
+                    {
+                        field: 'ip',
+                        title: 'IP',
+                        minWidth: 120
+                    },
+                    {
+                        field: 'costTime',
+                        title: '耗时',
+                        minWidth: 80,
+                        templet: function (params) {
+                            return params.cost_time + 'ms';
+                        }
+                    },
+                    {
+                        field: 'success',
+                        title: '状态',
+                        width: 60,
+                        templet: function (params) {
+                            if (1 === params.success) {
+                                return `<i class="layui-icon layui-icon-circle-dot" style="font-size: 20px; color: #7ecf51;"></i>`;
+                            } else {
+                                return `<i class="layui-icon layui-icon-circle-dot" style="font-size: 20px; color: #e16757;"></i>`;
+                            }
+                        }
+                    },
+                    {
+                        field: 'id',
+                        title: '详情',
+                        width: 70,
+                        toolbar: '#options',
+                    }
+                ]]
+            });
+
+            table.on('tool(tracingList)', function (obj) {
+                if (obj.event === 'info') {
+                    window.info(obj);
+                }
+            });
+
+            window.info = function (obj) {
+                $.ajax({
+                    type: "post",
+                    url: "/{:request()->app}/tracing/info",
+                    data: { id: obj.data['id'] },
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.code == 200) {
+                            layer.open({
+                                type: 1,
+                                title: false,
+                                anim: 5,
+                                scrollbar: false,
+                                resize: false,
+                                move: false,
+                                offset: 'auto',
+                                area: ['80%', '80%'],
+                                skin: 'open-skin',
+                                content: `<pre class="layui-code" lay-title="详细信息" lay-skin="notepad">` + response.data.details + `</pre>`,
+                                success: function (layero, index) {
+                                    layui.code({
+                                        elem: 'pre'
+                                    });
+                                }
+                            });
+                        } else {
+                            layer.msg(response.msg, {
+                                icon: 2,
+                                time: 1000
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+    <script type="text/html" id="options">
+        <button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="info"><i class="layui-icon layui-icon-log"></i></button>
+    </script>
+</body>
+
+</html>

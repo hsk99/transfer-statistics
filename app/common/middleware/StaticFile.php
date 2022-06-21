@@ -10,19 +10,19 @@ class StaticFile implements MiddlewareInterface
 {
     public function process(Request $request, callable $next): Response
     {
-        // Access to files beginning with. Is prohibited
+        // 禁止访问.开头的隐藏文件
         if (strpos($request->path(), '/.') !== false) {
-            return response('<h1>403 forbidden</h1>', 403);
+            $response = response('<h1>403 forbidden</h1>', 403);
+        } else {
+            /** @var Response $response */
+            $response = $next($request);
         }
 
-        /** @var Response $response */
-        $response = $next($request);
-
-        // Add cross domain HTTP header
-        /*$response->withHeaders([
-            'Access-Control-Allow-Origin'      => '*',
-            'Access-Control-Allow-Credentials' => 'true',
-        ]);*/
+        // 增加跨域http头
+        // $response->withHeaders([
+        //     'Access-Control-Allow-Origin'      => '*',
+        //     'Access-Control-Allow-Credentials' => 'true',
+        // ]);
 
         $response->withHeaders([
             'Server' => 'hsk99'
