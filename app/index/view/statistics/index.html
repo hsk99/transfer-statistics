@@ -121,13 +121,13 @@
                 <div class="layui-card">
                     <div class="layui-card-body">
                         <div class="layui-tab custom-tab layui-tab-brief" lay-filter="docDemoTabBrief">
-                            <div id="projectStatistics" style="background-color:#ffffff;min-height:400px;padding: 10px">
+                            <div id="projectStatistics" style="background-color:#ffffff;min-height:410px;padding: 10px">
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="layui-card">
-                    <div class="layui-card-header">调用记录</div>
+                    <div class="layui-card-header"><h2>调用记录</h2></div>
                     <div class="layui-card-body">
                         <table id="tracingList" lay-filter="tracingList"></table>
                     </div>
@@ -135,29 +135,43 @@
             </div>
             <div class="layui-col-md3">
                 <div class="layui-card">
-                    <div class="layui-card-header">IP（Top 10）</div>
                     <div class="layui-card-body">
-                        <ul class="list">
-                            {foreach name='projectIpStatisticList' item="vo"}
-                            <li class="list-item">
-                                <span class="title">{$vo.ip}</span>
-                                <span class="footer">{$vo.total}</span>
-                            </li>
-                            {/foreach}
-                        </ul>
+                        <table class="layui-table" lay-filter="projectIpStatisticList">
+                            <thead>
+                                <tr>
+                                    <th lay-data="{field:'transfer',width:'70%'}">IP（Top 10）</th>
+                                    <th lay-data="{field:'total',width:'30%'}">请求数</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {foreach name='projectIpStatisticList' item="vo"}
+                                <tr>
+                                    <td>{$vo.ip}</td>
+                                    <td>{$vo.total}</td>
+                                </tr>
+                                {/foreach}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 <div class="layui-card">
-                    <div class="layui-card-header">调用（Top 10）</div>
                     <div class="layui-card-body">
-                        <ul class="list">
-                            {foreach name='projectTransferStatisticList' item="vo"}
-                            <li class="list-item">
-                                <span class="title">{$vo.transfer}</span>
-                                <span class="footer">{$vo.total}</span>
-                            </li>
-                            {/foreach}
-                        </ul>
+                        <table class="layui-table" lay-filter="projectTransferStatisticList">
+                            <thead>
+                                <tr>
+                                    <th lay-data="{field:'transfer',width:'70%'}">调用（Top 10）</th>
+                                    <th lay-data="{field:'total',width:'30%'}">请求数</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {foreach name='projectTransferStatisticList' item="vo"}
+                                <tr>
+                                    <td>{$vo.transfer}</td>
+                                    <td>{$vo.total}</td>
+                                </tr>
+                                {/foreach}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -320,6 +334,21 @@
             };
             projectStatisticsObject.setOption(option);
 
+            // IP Top
+            table.init('projectIpStatisticList', {
+                limit: Number.MAX_VALUE,
+                height: 499,
+                skin: 'line',
+                even: true,
+            });
+
+            // 调用 Top
+            table.init('projectTransferStatisticList', {
+                limit: Number.MAX_VALUE,
+                height: 499,
+                skin: 'line',
+                even: true,
+            });
 
             // 调用记录
             table.render({
@@ -355,22 +384,22 @@
                     {
                         field: 'transfer',
                         title: '调用入口',
-                        minWidth: 150
+                        minWidth: 300
                     },
                     {
                         field: 'project',
                         title: '应用',
-                        minWidth: 150
+                        minWidth: 120
                     },
                     {
                         field: 'ip',
                         title: 'IP',
-                        minWidth: 120
+                        width: 135
                     },
                     {
                         field: 'costTime',
                         title: '耗时',
-                        minWidth: 80,
+                        width: 100,
                         templet: function (params) {
                             return params.cost_time + 'ms';
                         }

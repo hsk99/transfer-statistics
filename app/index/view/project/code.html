@@ -63,9 +63,6 @@
     <script>
         layui.use(['table'], function () {
             var table = layui.table;
-            let date = "{$date}";
-            let project = "{$project}";
-            let code = "{$code}";
 
             averageCostStatisticsObject = echarts.init(document.getElementById('averageCostStatistics'));
             countStatisticsObject = echarts.init(document.getElementById('countStatistics'));
@@ -225,9 +222,8 @@
                 even: true,
                 height: 415,
                 loading: true,
-                url: "/{:request()->app}/tracing/list",
+                url: "/{:request()->app}/tracing/list?{:http_build_query(['date' => $date, 'project' => $project, 'code' => $code])}",
                 method: 'POST',
-                where: { date: date, project: project, code: code },
                 page: true,
                 limit: 10,
                 parseData: function (params) {

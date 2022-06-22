@@ -12,6 +12,29 @@
     <!-- 主 题 更 换 -->
     <style id="pearadmin-bg-color"></style>
     <style>
+        div::-webkit-scrollbar {
+            width: 1px;
+            height: 1px;
+        }
+
+        div::-webkit-scrollbar-track {
+            background: rgb(239, 239, 239);
+            border-radius: 2px;
+        }
+
+        div::-webkit-scrollbar-thumb {
+            background: #bfbfbf;
+            border-radius: 10px;
+        }
+
+        div::-webkit-scrollbar-thumb:hover {
+            background: #333;
+        }
+
+        div::-webkit-scrollbar-corner {
+            background: #179a16;
+        }
+
         .overview-title {
             font-size: 16px;
             font-weight: 600;
@@ -359,8 +382,6 @@
             var count = layui.count;
             var dropdown = layui.dropdown;
             var table = layui.table;
-            let date = "{$date}";
-            let project = "{$project}";
 
             laydate.render({
                 elem: ".date",
@@ -574,7 +595,7 @@
             // 调用入口
             dropdown.on('click(transferList)', function (options) {
                 var transfer = $(this).attr('transfer');
-                var url = "/{:request()->app}/project/transfer?date=" + date + "&project=" + project + "&transfer=" + transfer;
+                var url = "/{:request()->app}/project/transfer?{:http_build_query(['date' => $date, 'project' => $project])}&transfer=" + escape(transfer);
 
                 $("#transferIframe").html(`<iframe src="` + url + `" width="100%" height="100%" style="border: none;"></iframe>`);
             });
@@ -582,7 +603,7 @@
             // 调用IP
             dropdown.on('click(ipList)', function (options) {
                 var ip = $(this).attr('ip');
-                var url = "/{:request()->app}/project/ip?date=" + date + "&project=" + project + "&ip=" + ip;
+                var url = "/{:request()->app}/project/ip?{:http_build_query(['date' => $date, 'project' => $project])}&ip=" + escape(ip);
 
                 $("#ipIframe").html(`<iframe src="` + url + `" width="100%" height="100%" style="border: none;"></iframe>`);
             });
@@ -590,7 +611,7 @@
             // 状态码
             dropdown.on('click(codeList)', function (options) {
                 var code = $(this).attr('code');
-                var url = "/{:request()->app}/project/code?date=" + date + "&project=" + project + "&code=" + code;
+                var url = "/{:request()->app}/project/code?{:http_build_query(['date' => $date, 'project' => $project])}&code=" + escape(code);
 
                 $("#codeIframe").html(`<iframe src="` + url + `" width="100%" height="100%" style="border: none;"></iframe>`);
             });
@@ -601,9 +622,8 @@
                 even: true,
                 height: 550,
                 loading: true,
-                url: "/{:request()->app}/tracing/list",
+                url: "/{:request()->app}/tracing/list?{:http_build_query(['date' => $date, 'project' => $project])}",
                 method: 'POST',
-                where: { date: date, project: project },
                 page: true,
                 limit: 10,
                 parseData: function (params) {
