@@ -120,11 +120,11 @@ class ActionHook implements MiddlewareInterface
         if (!$initialized) {
             if (class_exists(\think\facade\Db::class)) {
                 \think\facade\Db::listen(function ($sql, $runtime, $master) {
-                    if ($sql === 'select 1') {
+                    if ($sql === 'select 1' || !is_numeric($runtime)) {
                         return;
                     }
 
-                    $this->sqlLogs .= "[SQL] " . trim($sql) . " [ RunTime:{$runtime}s ]\n";
+                    $this->sqlLogs .= "[SQL] " . trim($sql) . " [ RunTime: " . $runtime * 1000 . " ms ]\n";
                 });
             }
 
@@ -135,7 +135,19 @@ class ActionHook implements MiddlewareInterface
                     }
                     try {
                         \support\Redis::connection($key)->listen(function (\Illuminate\Redis\Events\CommandExecuted $command) use ($key) {
-                            $this->redisLogs .= "[Redis] [connection:$key] Redis::{$command->command}('" . implode('\', \'', $command->parameters) . "') ({$command->time} ms)\r\n";
+                            $parameters = array_map(function ($item) {
+                                if (is_array($item)) {
+                                    return json_encode($item, 320);
+                                }
+                                return $item;
+                            }, $command->parameters);
+                            $parameters = implode('\', \'', $parameters);
+
+                            if ('get' === $command->command && 'ping' === $parameters) {
+                                return;
+                            }
+
+                            $this->redisLogs .= "[Redis] [connection:$key] Redis::{$command->command}('" . $parameters . "') ({$command->time} ms)\n";
                         });
                     } catch (\Throwable $e) {
                     }

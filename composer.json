@@ -31,12 +31,14 @@
 		"webman/redis-queue": "^1.1",
 		"webman/think-orm": "^1.0",
 		"illuminate/redis": "^8.83",
+		"illuminate/events": "^8.83",
 		"symfony/cache": "^5.4",
 		"topthink/think-template": "^2.0",
 		"topthink/think-validate": "^2.0",
 		"tinywan/jwt": "^1.2",
 		"hsk99/webman-exception": "^1.0",
-		"hsk99/webman-task": "^1.0"
+		"hsk99/webman-task": "^1.0",
+		"elasticsearch/elasticsearch": "^7.0"
 	},
 	"suggest": {
 		"ext-event": "For better performance. "
