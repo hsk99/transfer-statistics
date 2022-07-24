@@ -53,6 +53,25 @@ class Statistic implements \Webman\RedisQueue\Consumer
             $trace = uniqid();
             $data = ['trace' => $trace] + $data;
 
+            $dataInsert = [
+                'trace'     => $data['trace'],
+                'project'   => $data['project'],
+                'ip'        => $data['ip'],
+                'transfer'  => $data['transfer'],
+                'cost_time' => $data['costTime'],
+                'success'   => $data['success'] ? 1 : 0,
+                'code'      => $data['code'],
+                'details'   => $data['details'],
+                'day'       => date('Ymd', strtotime($data['time'])),
+                'time'      => $data['time'],
+            ];
+            // 调用记录存储
+            \Webman\RedisQueue\Client::connection('mysql')->send('mysql_insert_tracing', $dataInsert);
+            // 调用记录添加至elasticsearch
+            if (config('elasticsearch.enable', false)) {
+                \Webman\RedisQueue\Client::connection('elasticsearch')->send('elasticsearch_insert_index', $dataInsert);
+            }
+
             // 总统计
             $this->totalStatistics($data);
 
@@ -61,20 +80,6 @@ class Statistic implements \Webman\RedisQueue\Consumer
 
             // 应用Client统计
             $this->projectClientStatistics($data);
-
-            // 调用记录存储
-            \Webman\RedisQueue\Client::connection('data')->send('data_insert_tracing', [
-                'trace'     => $data['trace'],
-                'project'   => $data['project'],
-                'ip'        => $data['ip'],
-                'transfer'  => $data['transfer'],
-                'cost_time' => $data['costTime'],
-                'success'   => $data['success'],
-                'code'      => $data['code'],
-                'details'   => $data['details'],
-                'day'       => date('Ymd', strtotime($data['time'])),
-                'time'      => $data['time'],
-            ]);
         } catch (\Throwable $th) {
             \Hsk99\WebmanException\RunException::report($th);
         }

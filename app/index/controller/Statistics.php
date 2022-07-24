@@ -19,10 +19,9 @@ class Statistics
     public function index(\support\Request $request)
     {
         $statisticData = Db::name('statistic')
-            ->field('SUM(count) AS count, SUM(cost) AS cost, SUM(success_count) AS success_count, SUM(error_count) AS error_count')
-            ->select()
-            ->toArray();
-        $statisticData = $statisticData[0] ?: [];
+            ->field('count, cost, success_count, error_count')
+            ->where('day', date('Ymd'))
+            ->find();
         $statisticData['project_count'] = Db::name('project')->count();
 
         $projectStatisticData = Db::name('statistic_project')

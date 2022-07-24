@@ -50,19 +50,37 @@ class Index
                 'href'     => "/" . request()->app . "/config/index",
             ],
             3 => [
-                "id"    => 3,
+                "id"       => 3,
+                "pid"      => 0,
+                "title"    => "全局搜索",
+                "icon"     => "layui-icon layui-icon-search",
+                "type"     => 1,
+                "openType" => "_iframe",
+                "href"     => "/" . request()->app . "/search/index",
+            ],
+            4 => [
+                "id"       => 4,
+                "pid"      => 0,
+                "title"    => "应用管理",
+                "icon"     => "layui-icon layui-icon-app",
+                "type"     => 1,
+                "openType" => "_iframe",
+                "href"     => "/" . request()->app . "/manage/index",
+            ],
+            5 => [
+                "id"    => 5,
                 "pid"   => 0,
-                "title" => "应用管理",
-                "icon"  => "layui-icon layui-icon-app",
+                "title" => "应用监控",
+                "icon"  => "layui-icon layui-icon-chart",
                 "type"  => 0,
                 "href"  => "",
             ]
         ];
         $projectList = \think\facade\Db::name('project')->column('project');
         foreach ($projectList as $key => $project) {
-            $menuList[$key + 4] = [
-                "id"       => $key + 4,
-                "pid"      => 3,
+            $menuList[$key + 6] = [
+                "id"       => $key + 6,
+                "pid"      => 5,
                 "title"    => $project,
                 "icon"     => "layui-icon layui-icon-circle",
                 "type"     => 1,

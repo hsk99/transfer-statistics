@@ -25,6 +25,8 @@ class Tracing
         $ip       = request()->input('ip');
         $transfer = request()->input('transfer');
         $code     = request()->input('code');
+        $time     = request()->input('time');
+        $details  = request()->input('details');
 
         $where = [];
 
@@ -47,6 +49,14 @@ class Tracing
 
         if (!empty($code)) {
             $where[] = ["code", "=", $code];
+        }
+
+        if (!empty($time)) {
+            $where[] = ["time", "like", "$time%"];
+        }
+
+        if (!empty($details)) {
+            $where[] = ["details", "like", "%$details%"];
         }
 
         $list = Db::name('tracing')
@@ -77,18 +87,43 @@ class Tracing
      */
     public function info(\support\Request $request)
     {
-        $id = (int)request()->input('id');
+        $id    = (int)request()->input('id');
+        $trace = request()->input('trace');
 
-        if (empty($id)) {
+        if (empty($id) && empty($trace)) {
             return api([], 400, '请求错误');
         }
 
-        $info = Db::name('tracing')->find($id);
+        $where = [];
+        if (!empty($id)) {
+            $where[] = ['id', '=', $id];
+        } else {
+            $where[] = ['trace', '=', $trace];
+
+            if (config('elasticsearch.enable', false)) {
+                try {
+                    $response = \app\common\service\Elasticsearch::get([
+                        'index' => config('elasticsearch.index', 'tracing'),
+                        'id'    => $trace,
+                    ]);
+
+                    $info = $response['_source'];
+                    $info['details'] = str_replace(["\r\n", "\n", '\r\n', '\n'], "<br/>", $info['details']);
+                    $info['details'] = json_encode(json_decode($info['details'], true), 448);
+
+                    return api($info);
+                } catch (\Throwable $th) {
+                }
+            }
+        }
+
+        $info = Db::name('tracing')->where($where)->find();
 
         if (empty($info)) {
             return api([], 400, '参数错误');
         }
 
+        $info['details'] = str_replace(["\r\n", "\n", '\r\n', '\n'], "<br/>", $info['details']);
         $info['details'] = json_encode(json_decode($info['details'], true), 448);
 
         return api($info);

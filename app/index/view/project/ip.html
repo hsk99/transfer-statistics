@@ -12,6 +12,29 @@
     <!-- 主 题 更 换 -->
     <style id="pearadmin-bg-color"></style>
     <style>
+        div::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        div::-webkit-scrollbar-track {
+            background: rgb(239, 239, 239);
+            border-radius: 2px;
+        }
+
+        div::-webkit-scrollbar-thumb {
+            background: #bfbfbf;
+            border-radius: 10px;
+        }
+
+        div::-webkit-scrollbar-thumb:hover {
+            background: #333;
+        }
+
+        div::-webkit-scrollbar-corner {
+            background: #179a16;
+        }
+
         .open-skin {
             background-color: #3f3f3f !important;
         }
@@ -31,7 +54,7 @@
                         <div class="layui-card">
                             <div class="layui-card-body">
                                 <div class="layui-tab custom-tab layui-tab-brief">
-                                    <div id="averageCostStatistics" style="background-color:#ffffff;min-height:190px;">
+                                    <div id="averageCostStatistics" style="background-color:#ffffff;min-height:215px;">
                                     </div>
                                 </div>
                             </div>
@@ -41,7 +64,7 @@
                         <div class="layui-card">
                             <div class="layui-card-body">
                                 <div class="layui-tab custom-tab layui-tab-brief">
-                                    <div id="countStatistics" style="background-color:#ffffff;min-height:190px;">
+                                    <div id="countStatistics" style="background-color:#ffffff;min-height:215px;">
                                     </div>
                                 </div>
                             </div>
@@ -51,7 +74,7 @@
                         <div class="layui-card">
                             <div class="layui-card-body">
                                 <div class="layui-tab custom-tab layui-tab-brief">
-                                    <div id="successCountStatistics" style="background-color:#ffffff;min-height:190px;">
+                                    <div id="successCountStatistics" style="background-color:#ffffff;min-height:215px;">
                                     </div>
                                 </div>
                             </div>
@@ -61,7 +84,7 @@
                         <div class="layui-card">
                             <div class="layui-card-body">
                                 <div class="layui-tab custom-tab layui-tab-brief">
-                                    <div id="errorCountStatistics" style="background-color:#ffffff;min-height:190px;">
+                                    <div id="errorCountStatistics" style="background-color:#ffffff;min-height:215px;">
                                     </div>
                                 </div>
                             </div>
@@ -244,7 +267,7 @@
                 elem: '#tracingList',
                 size: 'sm',
                 even: true,
-                height: 415,
+                height: 425,
                 loading: true,
                 url: "/{:request()->app}/tracing/list?{:http_build_query(['date' => $date, 'project' => $project, 'ip' => $ip])}",
                 method: 'POST',
@@ -265,6 +288,12 @@
                 response: {
                     statusCode: 200
                 },
+                toolbar: true,
+                defaultToolbar: [{
+                    title: '刷新',
+                    layEvent: 'refresh',
+                    icon: 'layui-icon-refresh',
+                }, 'filter', 'print', 'exports'],
                 cols: [[
                     {
                         field: 'time',
@@ -310,6 +339,16 @@
                     window.info(obj);
                 }
             });
+
+            table.on('toolbar(tracingList)', function (obj) {
+                if (obj.event === 'refresh') {
+                    window.refresh(obj);
+                }
+            });
+
+            window.refresh = function (param) {
+                table.reload('tracingList');
+            }
 
             window.info = function (obj) {
                 $.ajax({

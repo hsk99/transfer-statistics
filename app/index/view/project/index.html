@@ -13,8 +13,8 @@
     <style id="pearadmin-bg-color"></style>
     <style>
         div::-webkit-scrollbar {
-            width: 1px;
-            height: 1px;
+            width: 10px;
+            height: 10px;
         }
 
         div::-webkit-scrollbar-track {
@@ -301,7 +301,7 @@
     <div class="layui-row layui-col-space12">
         <blockquote class="layui-elem-quote overview-title">调用IP</blockquote>
         <div class="layui-col-md3">
-            <div class="layui-panel" style="height: 500px; overflow: hidden auto;">
+            <div class="layui-panel" style="height: 550px; overflow: hidden auto;">
                 <ul class="layui-menu" id="ipList">
                     {foreach name='ipStatistic' item="vo""}
                     <li lay-options="{id: {$vo.id}}" ip="{$vo.ip}">
@@ -316,7 +316,7 @@
         </div>
 
         <div class="layui-col-md9">
-            <div style="width: 100%;height: 500px;" id="ipIframe">
+            <div style="width: 100%;height: 550px;" id="ipIframe">
             </div>
         </div>
     </div>
@@ -324,7 +324,7 @@
     <div class="layui-row layui-col-space12">
         <blockquote class="layui-elem-quote overview-title">调用入口</blockquote>
         <div class="layui-col-md3">
-            <div class="layui-panel" style="height: 500px; overflow: hidden auto;">
+            <div class="layui-panel" style="height: 550px; overflow: hidden auto;">
                 <ul class="layui-menu" id="transferList">
                     {foreach name='transferStatistic' item="vo""}
                     <li lay-options="{id: {$vo.id}}" transfer="{$vo.transfer}">
@@ -339,7 +339,7 @@
         </div>
 
         <div class="layui-col-md9">
-            <div style="width: 100%;height: 500px;" id="transferIframe">
+            <div style="width: 100%;height: 550px;" id="transferIframe">
             </div>
         </div>
     </div>
@@ -347,7 +347,7 @@
     <div class="layui-row layui-col-space12">
         <blockquote class="layui-elem-quote overview-title">状态码</blockquote>
         <div class="layui-col-md3">
-            <div class="layui-panel" style="height: 500px; overflow: hidden auto;">
+            <div class="layui-panel" style="height: 550px; overflow: hidden auto;">
                 <ul class="layui-menu" id="codeList">
                     {foreach name='codeStatistic' item="vo""}
                     <li lay-options="{id: {$vo.id}}" code="{$vo.code}">
@@ -362,14 +362,53 @@
         </div>
 
         <div class="layui-col-md9">
-            <div style="width: 100%;height: 500px;" id="codeIframe">
+            <div style="width: 100%;height: 550px;" id="codeIframe">
             </div>
         </div>
     </div>
 
     <div class="layui-row layui-col-space12">
         <blockquote class="layui-elem-quote overview-title">调用记录</blockquote>
-        <table id="tracingList" lay-filter="tracingList"></table>
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <form class="layui-form" action="">
+                    <div class="layui-form-item">
+
+                        <div class="layui-form-item layui-inline">
+                            <div class="layui-input-inline">
+                                <input type="text" name="time" placeholder="时间" class="layui-input tracingTime">
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-inline">
+                            <div class="layui-input-inline">
+                                <input type="text" name="ip" placeholder="IP" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-inline">
+                            <div class="layui-input-inline">
+                                <input type="text" name="transfer" placeholder="调用入口" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-inline">
+                            <div class="layui-input-inline">
+                                <input type="text" name="details" placeholder="详情关键字" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-inline">
+                            <button class="pear-btn pear-btn-md pear-btn-primary" lay-submit lay-filter="tracingFilter">
+                                <i class="layui-icon layui-icon-search"></i>
+                                查询
+                            </button>
+                            <button type="reset" class="pear-btn pear-btn-md">
+                                <i class="layui-icon layui-icon-refresh"></i>
+                                重置
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <table id="tracingList" lay-filter="tracingList"></table>
+            </div>
+        </div>
     </div>
 
     <script src="/static/common/js/jquery.min.js"></script>
@@ -377,11 +416,12 @@
     <script src="/static/component/pear/pear.js"></script>
     <script src="/static/common/js/echarts-5.3.2.min.js"></script>
     <script>
-        layui.use(['laydate', 'count', 'dropdown', 'table', 'topBar'], function () {
+        layui.use(['laydate', 'count', 'dropdown', 'table', 'topBar', 'form'], function () {
             var laydate = layui.laydate;
             var count = layui.count;
             var dropdown = layui.dropdown;
             var table = layui.table;
+            var form = layui.form;
 
             laydate.render({
                 elem: ".date",
@@ -616,11 +656,33 @@
                 $("#codeIframe").html(`<iframe src="` + url + `" width="100%" height="100%" style="border: none;"></iframe>`);
             });
 
+            laydate.render({
+                elem: ".tracingTime",
+                type: 'time',
+                trigger: 'click',
+                format: 'HH:mm:ss',
+            })
+
+            // 调用记录 筛选
+            form.on('submit(tracingFilter)', function (data) {
+                var field = data.field;
+                field.time = "{$date} " + field.time;
+
+                table.reload('tracingList', {
+                    url: "/{:request()->app}/tracing/list?{:http_build_query(['date' => $date, 'project' => $project])}",
+                    where: field,
+                    page: {
+                        page: 1
+                    }
+                });
+                return false;
+            });
+
             // 调用记录
             table.render({
                 elem: '#tracingList',
                 even: true,
-                height: 550,
+                height: 600,
                 loading: true,
                 url: "/{:request()->app}/tracing/list?{:http_build_query(['date' => $date, 'project' => $project])}",
                 method: 'POST',
@@ -641,6 +703,12 @@
                 response: {
                     statusCode: 200
                 },
+                toolbar: true,
+                defaultToolbar: [{
+                    title: '刷新',
+                    layEvent: 'refresh',
+                    icon: 'layui-icon-refresh',
+                }, 'filter', 'print', 'exports'],
                 cols: [[
                     {
                         field: 'time',
@@ -691,6 +759,16 @@
                     window.info(obj);
                 }
             });
+
+            table.on('toolbar(tracingList)', function (obj) {
+                if (obj.event === 'refresh') {
+                    window.refresh(obj);
+                }
+            });
+
+            window.refresh = function (param) {
+                table.reload('tracingList');
+            }
 
             window.info = function (obj) {
                 $.ajax({

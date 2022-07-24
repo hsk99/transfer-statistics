@@ -18,7 +18,7 @@ return [
     'transport'        => 'tcp',
     'context'          => [],
     'name'             => 'transfer-statistics',
-    'count'            => 1,
+    'count'            => 4,
     'user'             => '',
     'group'            => '',
     'reusePort'        => false,

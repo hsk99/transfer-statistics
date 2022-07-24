@@ -10,6 +10,29 @@
     <link rel="stylesheet" href="/static/component/pear/css/pear.css" />
     <link rel="stylesheet" href="/static/admin/css/other/console1.css" />
     <style>
+        div::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        div::-webkit-scrollbar-track {
+            background: rgb(239, 239, 239);
+            border-radius: 2px;
+        }
+
+        div::-webkit-scrollbar-thumb {
+            background: #bfbfbf;
+            border-radius: 10px;
+        }
+
+        div::-webkit-scrollbar-thumb:hover {
+            background: #333;
+        }
+
+        div::-webkit-scrollbar-corner {
+            background: #179a16;
+        }
+
         .open-skin {
             background-color: #3f3f3f !important;
         }
@@ -49,7 +72,7 @@
             </div>
             <div class="layui-col-xs12 layui-col-md3">
                 <div class="layui-card top-panel">
-                    <div class="layui-card-header">请求数量</div>
+                    <div class="layui-card-header">请求数量（当天）</div>
                     <div class="layui-card-body">
                         <div class="layui-row layui-col-space5">
                             <div class="layui-col-xs8 layui-col-md8 top-panel-number" style="color: #28333E;"
@@ -70,7 +93,7 @@
             </div>
             <div class="layui-col-xs12 layui-col-md3">
                 <div class="layui-card top-panel">
-                    <div class="layui-card-header">成功数量</div>
+                    <div class="layui-card-header">成功数量（当天）</div>
                     <div class="layui-card-body">
                         <div class="layui-row layui-col-space5">
                             <div class="layui-col-xs8 layui-col-md8 top-panel-number" style="color: #28333E;"
@@ -92,7 +115,7 @@
             </div>
             <div class="layui-col-xs12 layui-col-md3">
                 <div class="layui-card top-panel">
-                    <div class="layui-card-header">异常数量</div>
+                    <div class="layui-card-header">异常数量（当天）</div>
                     <div class="layui-card-body">
                         <div class="layui-row layui-col-space5">
                             <div class="layui-col-xs8 layui-col-md8 top-panel-number" style="color: #28333E;"
@@ -127,8 +150,51 @@
                     </div>
                 </div>
                 <div class="layui-card">
-                    <div class="layui-card-header"><h2>调用记录</h2></div>
+                    <div class="layui-card-header">
+                        <h2>调用记录</h2>
+                    </div>
                     <div class="layui-card-body">
+                        <form class="layui-form" action="">
+                            <div class="layui-form-item">
+
+                                <div class="layui-form-item layui-inline">
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="time" placeholder="时间" class="layui-input tracingTime">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item layui-inline">
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="project" placeholder="应用" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item layui-inline">
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="ip" placeholder="IP" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item layui-inline">
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="transfer" placeholder="调用入口" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item layui-inline">
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="details" placeholder="详情关键字" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item layui-inline">
+                                    <button class="pear-btn pear-btn-md pear-btn-primary" lay-submit
+                                        lay-filter="tracingFilter">
+                                        <i class="layui-icon layui-icon-search"></i>
+                                        查询
+                                    </button>
+                                    <button type="reset" class="pear-btn pear-btn-md">
+                                        <i class="layui-icon layui-icon-refresh"></i>
+                                        重置
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
                         <table id="tracingList" lay-filter="tracingList"></table>
                     </div>
                 </div>
@@ -183,9 +249,11 @@
     <script src="/static/common/js/jquery.min.js"></script>
     <script src="/static/common/js/echarts-5.3.2.min.js"></script>
     <script>
-        layui.use(['count', 'table', 'topBar'], function () {
+        layui.use(['count', 'table', 'topBar', 'laydate', 'form'], function () {
             var count = layui.count;
             var table = layui.table;
+            var laydate = layui.laydate;
+            var form = layui.form;
 
             count.up("project_count", {
                 time: 20,
@@ -337,7 +405,7 @@
             // IP Top
             table.init('projectIpStatisticList', {
                 limit: Number.MAX_VALUE,
-                height: 499,
+                height: 500,
                 skin: 'line',
                 even: true,
             });
@@ -345,16 +413,35 @@
             // 调用 Top
             table.init('projectTransferStatisticList', {
                 limit: Number.MAX_VALUE,
-                height: 499,
+                height: 500,
                 skin: 'line',
                 even: true,
+            });
+
+            laydate.render({
+                elem: ".tracingTime",
+                type: 'datetime',
+                trigger: 'click',
+                format: 'yyyy-MM-dd HH:mm:ss',
+            })
+
+            // 调用记录 筛选
+            form.on('submit(tracingFilter)', function (data) {
+                table.reload('tracingList', {
+                    url: "/{:request()->app}/tracing/list",
+                    where: data.field,
+                    page: {
+                        page: 1
+                    }
+                });
+                return false;
             });
 
             // 调用记录
             table.render({
                 elem: '#tracingList',
                 even: true,
-                height: 550,
+                height: 600,
                 loading: true,
                 url: "/{:request()->app}/tracing/list",
                 method: 'POST',
@@ -375,6 +462,12 @@
                 response: {
                     statusCode: 200
                 },
+                toolbar: true,
+                defaultToolbar: [{
+                    title: '刷新',
+                    layEvent: 'refresh',
+                    icon: 'layui-icon-refresh',
+                }, 'filter', 'print', 'exports'],
                 cols: [[
                     {
                         field: 'time',
@@ -430,6 +523,16 @@
                     window.info(obj);
                 }
             });
+
+            table.on('toolbar(tracingList)', function (obj) {
+                if (obj.event === 'refresh') {
+                    window.refresh(obj);
+                }
+            });
+
+            window.refresh = function (param) {
+                table.reload('tracingList');
+            }
 
             window.info = function (obj) {
                 $.ajax({
