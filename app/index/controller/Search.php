@@ -212,7 +212,6 @@ class Search
                 ->each(function ($item, $key) use (&$_source, &$keywordArray, &$keyword) {
                     foreach ($_source as $source) {
                         if ('trace' === $source) {
-                            $item['trace'] = $item['trace'];
                             continue;
                         }
                         foreach ($keywordArray as $_keyword) {
