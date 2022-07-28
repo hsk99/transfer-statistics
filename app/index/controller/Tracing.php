@@ -108,8 +108,9 @@ class Tracing
                     ]);
 
                     $info = $response['_source'];
-                    $info['details'] = str_replace(["\r\n", "\n", '\r\n', '\n'], "<br/>", $info['details']);
                     $info['details'] = json_encode(json_decode($info['details'], true), 448);
+                    $info['details'] = str_replace(['\r\n', '\n'], "\n", $info['details']);
+                    $info['details'] = htmlspecialchars($info['details']);
 
                     return api($info);
                 } catch (\Throwable $th) {
@@ -123,8 +124,9 @@ class Tracing
             return api([], 400, '参数错误');
         }
 
-        $info['details'] = str_replace(["\r\n", "\n", '\r\n', '\n'], "<br/>", $info['details']);
         $info['details'] = json_encode(json_decode($info['details'], true), 448);
+        $info['details'] = str_replace(['\r\n', '\n'], "\n", $info['details']);
+        $info['details'] = htmlspecialchars($info['details']);
 
         return api($info);
     }
