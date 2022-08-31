@@ -1,51 +1,29 @@
 <?php
 
-namespace app\task\start;
+namespace app\common\service;
 
 use think\facade\Db;
 use app\common\service\Elasticsearch;
-use Workerman\Timer;
 
-class SyncElasticsearch
+class SyncIndexToElasticSearch
 {
     /**
-     * @author HSK
-     * @date 2022-07-13 16:43:24
-     *
-     * @param \Workerman\Worker $worker
-     */
-    public function __construct(\Workerman\Worker $worker)
-    {
-        $workerId    = $worker->id;
-        $workerCount = $worker->count;
-        if ($workerCount > 1 && 0 === $worker->id) {
-            return;
-        }
-
-        if (config('elasticsearch.enable', false)) {
-            Timer::add(10, function () use ($workerId, $workerCount) {
-                $this->sync($workerId, $workerCount);
-            }, '', false);
-
-            Timer::add(3600, function () use ($workerId, $workerCount) {
-                $this->sync($workerId, $workerCount);
-            });
-        }
-    }
-
-    /**
-     * 同步数据
+     * 执行同步
      *
      * @author HSK
-     * @date 2022-07-13 16:45:43
+     * @date 2022-08-31 09:24:15
      *
      * @param integer $workerId
      * @param integer $workerCount
      * 
      * @return void
      */
-    protected function sync(int $workerId, int $workerCount)
+    public static function run(int $workerId, int $workerCount)
     {
+        if (!config('elasticsearch.enable', false)) {
+            return;
+        }
+
         try {
             if (!Elasticsearch::indicesExists(config('elasticsearch.index', 'tracing'))) {
                 Elasticsearch::indicesCreate(config('elasticsearch.index', 'tracing'), [
@@ -68,13 +46,13 @@ class SyncElasticsearch
             $workerHandleCount = ceil($tracingDbCount / $workerCount);
 
             if (0 === $workerId) {
-                $point    = $this->binaryStartPoint(0, $tracingDbCount);
+                $point    = static::binaryStartPoint(0, $tracingDbCount);
                 $endPoint = $tracingDbCount;
             } else {
                 $endPoint = $workerId * $workerHandleCount;
-                $point    = $this->binaryStartPoint(($workerId - 1) * $workerHandleCount, $endPoint);
+                $point    = static::binaryStartPoint(($workerId - 1) * $workerHandleCount, $endPoint);
             }
-            
+
             switch (true) {
                 case $endPoint - $point <= 5:
                     $limit = 5;
@@ -98,8 +76,8 @@ class SyncElasticsearch
 
             $timeInterval = 10;
             for ($page = floor($point / $limit); $page <= ceil($endPoint / $limit); $page++) {
-                Timer::add($timeInterval, function () use ($page, $limit) {
-                    $this->handleData($page, $limit);
+                \Workerman\Timer::add($timeInterval, function () use ($page, $limit) {
+                    static::handleData($page, $limit);
                 }, '', false);
                 $timeInterval += 10;
             }
@@ -119,7 +97,7 @@ class SyncElasticsearch
      *
      * @return void
      */
-    protected function handleData(int $page, int $limit)
+    protected static function handleData(int $page, int $limit)
     {
         try {
             $tracingList = Db::name('tracing')
@@ -128,14 +106,27 @@ class SyncElasticsearch
                 ->page($page)
                 ->select()
                 ->toArray();
-            array_map(function ($item) {
-                if (!Elasticsearch::exists([
+
+            $insertElasticsearchData = ['body' => []];
+            foreach ($tracingList as $item) {
+                if (Elasticsearch::exists([
                     'index' => config('elasticsearch.index', 'tracing'),
                     'id'    => $item['trace'],
                 ])) {
-                    \Webman\RedisQueue\Client::connection('elasticsearch')->send('elasticsearch_insert_index', $item);
+                    continue;
                 }
-            }, $tracingList);
+
+                $insertElasticsearchData['body'][] = [
+                    'index' => [
+                        '_index' => config('elasticsearch.index', 'tracing'),
+                        '_id'    => $item['trace']
+                    ]
+                ];
+                $insertElasticsearchData['body'][] = ['sort' => strtotime($item['time'])] + $item;
+            }
+            if (!empty($insertElasticsearchData['body'])) {
+                Elasticsearch::bulk($insertElasticsearchData);
+            }
         } catch (\Throwable $th) {
             \Hsk99\WebmanException\RunException::report($th);
         }
@@ -152,7 +143,7 @@ class SyncElasticsearch
      *
      * @return integer
      */
-    protected function binaryStartPoint(int $startPoint, int $endPoint): int
+    protected static function binaryStartPoint(int $startPoint, int $endPoint): int
     {
         if (
             $startPoint === $endPoint ||
@@ -174,9 +165,9 @@ class SyncElasticsearch
         }
 
         if (Elasticsearch::exists(['index' => config('elasticsearch.index', 'tracing'), 'id' => $tracing[0]['trace']])) {
-            return $this->binaryStartPoint($midPoint, $endPoint);
+            return static::binaryStartPoint($midPoint, $endPoint);
         } else {
-            return $this->binaryStartPoint($startPoint, $midPoint);
+            return static::binaryStartPoint($startPoint, $midPoint);
         }
     }
 }

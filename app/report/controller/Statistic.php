@@ -2,6 +2,8 @@
 
 namespace app\report\controller;
 
+use support\Redis;
+
 class Statistic
 {
     /**
@@ -24,14 +26,28 @@ class Statistic
 
             $transferList = explode("\n", $transfer);
             $transferList = array_filter($transferList);
-            array_map(function ($item) {
+
+            foreach ($transferList as $item) {
                 try {
-                    \Webman\RedisQueue\Client::connection('statistic')->send('statistic', json_decode($item, true));
+                    $itemArray = json_decode($item, true);
+                    if (
+                        !isset($itemArray['project']) ||
+                        !isset($itemArray['ip']) ||
+                        !isset($itemArray['transfer']) ||
+                        !isset($itemArray['costTime']) ||
+                        !isset($itemArray['success']) ||
+                        !isset($itemArray['time']) ||
+                        !isset($itemArray['code']) ||
+                        !isset($itemArray['details'])
+                    ) {
+                        continue;
+                    }
+                    Redis::rPush('TransferCache', $item);
                 } catch (\Throwable $th) {
                     \Hsk99\WebmanException\RunException::report($th);
                 }
-            }, $transferList);
-
+            }
+            
             return api([], 200, 'success');
         } catch (\Throwable $th) {
             \Hsk99\WebmanException\RunException::report($th);

@@ -37,4 +37,24 @@ return [
         ],
         'bootstrap' => []
     ],
+    'statistic' => [
+        'handler' => process\Statistic::class,
+        'count'   => 1,
+    ],
+    'sync.statistics.to.mysql' => [
+        'handler' => process\SyncStatisticsToMySql::class,
+        'count'   => 1,
+    ],
+    'tracing.insert.mysql' => [
+        'handler' => process\TracingInsertMySql::class,
+        'count'   => 1,
+    ],
+    'index.insert.elasticsearch' => [
+        'handler' => process\IndexInsertElasticSearch::class,
+        'count'   => 1,
+    ],
+    'sync.index.to.elasticsearch' => [
+        'handler' => process\SyncIndexToElasticSearch::class,
+        'count'   => 1,
+    ],
 ];

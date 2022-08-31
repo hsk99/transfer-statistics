@@ -17,5 +17,4 @@ return [
     support\bootstrap\Session::class,
     Webman\ThinkOrm\ThinkOrm::class,
     support\hsk99\bootstrap\ThinkOrmLog::class,
-    app\common\service\Cache::class,
 ];

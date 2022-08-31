@@ -28,8 +28,8 @@
 		"webman/console": "^1.0",
 		"webman/auto-route": "^1.0",
 		"webman/cors": "^1.0",
-		"webman/redis-queue": "^1.1",
 		"webman/think-orm": "^1.0",
+		"workerman/crontab": "^1.0",
 		"illuminate/redis": "^8.83",
 		"illuminate/events": "^8.83",
 		"symfony/cache": "^5.4",
@@ -37,7 +37,6 @@
 		"topthink/think-validate": "^2.0",
 		"tinywan/jwt": "^1.2",
 		"hsk99/webman-exception": "^1.0",
-		"hsk99/webman-task": "^1.0",
 		"elasticsearch/elasticsearch": "^7.0"
 	},
 	"suggest": {

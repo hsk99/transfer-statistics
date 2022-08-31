@@ -1,85 +1,91 @@
 <?php
 
-namespace app\queue\redis\statistic;
+namespace app\common\service;
 
 use support\Redis;
 
-class Statistic implements \Webman\RedisQueue\Consumer
+class Statistic
 {
     /**
-     * 链路统计
-     *
-     * @var string
-     */
-    public $queue = 'statistic';
-
-    /**
-     * 连接名
-     *
-     * @var string
-     */
-    public $connection = 'statistic';
-
-    /**
-     * 消费
+     * 执行统计
      *
      * @author HSK
-     * @date 2022-06-15 09:39:13
-     *
-     * @param array $data
+     * @date 2022-08-26 11:53:35
      *
      * @return void
      */
-    public function consume($data)
+    public static function run()
     {
         try {
-            if (
-                !isset($data['project']) ||
-                !isset($data['ip']) ||
-                !isset($data['transfer']) ||
-                !isset($data['costTime']) ||
-                !isset($data['success']) ||
-                !isset($data['time']) ||
-                !isset($data['code']) ||
-                !isset($data['details'])
-            ) {
+            if (Redis::setNx('TransferCacheLock', 1)) {
+                try {
+                    Redis::expire('TransferCacheLock', 10);
+
+                    $count = (int)Redis::lLen('TransferCache');
+                    if (0 === $count) {
+                        return;
+                    } else if ($count > 100) {
+                        $count = 100;
+                    }
+
+                    $transferList = Redis::lRange('TransferCache', 0, $count - 1);
+                    Redis::lTrim('TransferCache', $count, -1);
+                } catch (\Throwable $th) {
+                    \Hsk99\WebmanException\RunException::report($th);
+                    return;
+                } finally {
+                    Redis::del('TransferCacheLock');
+                }
+            } else {
+                \Workerman\Timer::add(0.1, function () {
+                    static::run();
+                }, '', false);
                 return;
             }
 
-            $data['project'] = str_replace([' ', ":"], '', trim($data['project']));
-            $data['success'] = (1 === $data['success']) ? true : false;
 
-            // 生成唯一追踪标识
-            $trace = uniqid();
-            $data = ['trace' => $trace] + $data;
+            foreach ($transferList as $transfer) {
+                try {
+                    $transfer = json_decode($transfer, true);
 
-            $dataInsert = [
-                'trace'     => $data['trace'],
-                'project'   => $data['project'],
-                'ip'        => $data['ip'],
-                'transfer'  => $data['transfer'],
-                'cost_time' => $data['costTime'],
-                'success'   => $data['success'] ? 1 : 0,
-                'code'      => $data['code'],
-                'details'   => $data['details'],
-                'day'       => date('Ymd', strtotime($data['time'])),
-                'time'      => $data['time'],
-            ];
-            // 调用记录存储
-            \Webman\RedisQueue\Client::connection('mysql')->send('mysql_insert_tracing', $dataInsert);
-            // 调用记录添加至elasticsearch
-            if (config('elasticsearch.enable', false)) {
-                \Webman\RedisQueue\Client::connection('elasticsearch')->send('elasticsearch_insert_index', $dataInsert);
+                    $transfer['project'] = str_replace([' ', ":"], '', trim($transfer['project']));
+                    $transfer['success'] = (1 === $transfer['success']) ? true : false;
+
+                    // 生成唯一追踪标识
+                    $trace    = uniqid();
+                    $transfer = ['trace' => $trace] + $transfer;
+
+                    $dataInsert = json_encode([
+                        'trace'     => $transfer['trace'],
+                        'project'   => $transfer['project'],
+                        'ip'        => $transfer['ip'],
+                        'transfer'  => $transfer['transfer'],
+                        'cost_time' => $transfer['costTime'],
+                        'success'   => $transfer['success'] ? 1 : 0,
+                        'code'      => $transfer['code'],
+                        'details'   => $transfer['details'],
+                        'day'       => date('Ymd', strtotime($transfer['time'])),
+                        'time'      => $transfer['time'],
+                    ], 320);
+                    // 调用记录缓存
+                    Redis::rPush('TracingInsertMySqlCache', $dataInsert);
+                    // 调用记录添加至elasticsearch
+                    if (config('elasticsearch.enable', false)) {
+                        Redis::rPush('IndexInsertElasticSearchCache', $dataInsert);
+                    }
+
+                    // 总统计
+                    static::totalStatistics($transfer);
+
+                    // 应用统计
+                    static::projectStatistics($transfer);
+
+                    // 应用Client统计
+                    static::projectClientStatistics($transfer);
+                } catch (\Throwable $th) {
+                    \Hsk99\WebmanException\RunException::report($th);
+                }
             }
-
-            // 总统计
-            $this->totalStatistics($data);
-
-            // 应用统计
-            $this->projectStatistics($data);
-
-            // 应用Client统计
-            $this->projectClientStatistics($data);
         } catch (\Throwable $th) {
             \Hsk99\WebmanException\RunException::report($th);
         }
@@ -95,7 +101,7 @@ class Statistic implements \Webman\RedisQueue\Consumer
      *
      * @return void
      */
-    protected function totalStatistics(array $data)
+    protected static function totalStatistics(array $data)
     {
         try {
             $project  = $data['project'];   // 应用
@@ -141,7 +147,7 @@ class Statistic implements \Webman\RedisQueue\Consumer
      *
      * @return void
      */
-    protected function projectStatistics(array $data)
+    protected static function projectStatistics(array $data)
     {
         try {
             $project  = $data['project'];   // 应用
@@ -290,7 +296,7 @@ class Statistic implements \Webman\RedisQueue\Consumer
      *
      * @return void
      */
-    protected function projectClientStatistics(array $data)
+    protected static function projectClientStatistics(array $data)
     {
         try {
             $project  = $data['project'];   // 应用
