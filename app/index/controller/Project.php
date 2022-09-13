@@ -115,6 +115,43 @@ class Project
     }
 
     /**
+     * IP统计
+     *
+     * @author HSK
+     * @date 2022-09-13 14:47:59
+     *
+     * @param \support\Request $request
+     *
+     * @return \support\Response
+     */
+    public function ipStatistic(\support\Request $request)
+    {
+        $page    = (int)request()->input('page', 1);
+        $limit   = (int)request()->input('limit', 10);
+        $project = request()->input('project');
+        $date    = request()->input('date', date('Y-m-d', time()));
+
+        // 查看的日期
+        $day = (int)date('Ymd', strtotime($date));
+
+        // IP统计数据
+        $list = Db::name('statistic_project_ip')
+            ->where('project', $project)
+            ->where('day', $day)
+            ->order('count', 'desc')
+            ->paginate([
+                'list_rows' => $limit,
+                'page'      => $page,
+            ])
+            ->each(function ($item, $key) {
+                $item['average_cost'] = (0 == $item['count']) ? 0 : round($item['cost'] / $item['count'] * 1000, 2);
+                return $item;
+            });
+
+        return api($list);
+    }
+
+    /**
      * IP
      *
      * @author HSK
@@ -180,6 +217,43 @@ class Project
     }
 
     /**
+     * 调用统计
+     *
+     * @author HSK
+     * @date 2022-09-13 15:04:02
+     *
+     * @param \support\Request $request
+     *
+     * @return \support\Response
+     */
+    public function transferStatistic(\support\Request $request)
+    {
+        $page    = (int)request()->input('page', 1);
+        $limit   = (int)request()->input('limit', 10);
+        $project = request()->input('project');
+        $date    = request()->input('date', date('Y-m-d', time()));
+
+        // 查看的日期
+        $day = (int)date('Ymd', strtotime($date));
+
+        // 调用统计数据
+        $list = Db::name('statistic_project_transfer')
+            ->where('project', $project)
+            ->where('day', $day)
+            ->order('count', 'desc')
+            ->paginate([
+                'list_rows' => $limit,
+                'page'      => $page,
+            ])
+            ->each(function ($item, $key) {
+                $item['average_cost'] = (0 == $item['count']) ? 0 : round($item['cost'] / $item['count'] * 1000, 2);
+                return $item;
+            });
+
+        return api($list);
+    }
+
+    /**
      * 调用
      *
      * @author HSK
@@ -242,6 +316,43 @@ class Project
             'transfer'  => $transfer,
             'chartList' => json_encode($chartList, 320),
         ]);
+    }
+
+    /**
+     * IP统计
+     *
+     * @author HSK
+     * @date 2022-09-13 15:09:54
+     *
+     * @param \support\Request $request
+     *
+     * @return \support\Response
+     */
+    public function codeStatistic(\support\Request $request)
+    {
+        $page    = (int)request()->input('page', 1);
+        $limit   = (int)request()->input('limit', 10);
+        $project = request()->input('project');
+        $date    = request()->input('date', date('Y-m-d', time()));
+
+        // 查看的日期
+        $day = (int)date('Ymd', strtotime($date));
+
+        // 状态码统计数据
+        $list = Db::name('statistic_project_code')
+            ->where('project', $project)
+            ->where('day', $day)
+            ->order('count', 'desc')
+            ->paginate([
+                'list_rows' => $limit,
+                'page'      => $page,
+            ])
+            ->each(function ($item, $key) {
+                $item['average_cost'] = (0 == $item['count']) ? 0 : round($item['cost'] / $item['count'] * 1000, 2);
+                return $item;
+            });
+
+        return api($list);
     }
 
     /**

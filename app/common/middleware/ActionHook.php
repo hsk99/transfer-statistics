@@ -164,22 +164,22 @@ class ActionHook implements MiddlewareInterface
         $redisLogsAll = explode("\n", $redisLogsAll);
         $redisLogsAll = array_filter($redisLogsAll);
         $data = [
-            'time'                => date('Y-m-d H:i:s.', $request->request_time) . substr($request->request_time, 11),   // 请求时间（包含毫秒时间）
-            'message'             => 'http request',                                                                      // 描述
-            'transceived_traffic' => $requestLen + strlen($response) + $fileLen,                                          // 收发流量
-            'run_time'            => $runTime,                                                                            // 运行时长
-            'ip'                  => $request->getRealIp($safe_mode = true) ?? '',                                        // 请求客户端IP
-            'url'                 => $request->fullUrl() ?? '',                                                           // 请求URL
-            'method'              => $request->method() ?? '',                                                            // 请求方法
-            'request_param'       => $request->all() ?? [],                                                               // 请求参数
-            'request_header'      => $request->header() ?? [],                                                            // 请求头
-            'cookie'              => $request->cookie() ?? [],                                                            // 请求cookie
-            'session'             => $request->session()->all() ?? [],                                                    // 请求session
-            'response_code'       => $response->getStatusCode() ?? '',                                                    // 响应码
-            'response_header'     => $response->getHeaders() ?? [],                                                       // 响应头
-            'response_body'       => $body ?? [],                                                                         // 响应数据
-            'sql'                 => $sqlLogsAll ?? [],                                                                   // 运行SQL
-            'redis'               => $redisLogsAll ?? [],                                                                 // 运行Redis
+            'time'                => date('Y-m-d H:i:s.', (int)$request->request_time) . substr($request->request_time, 11),   // 请求时间（包含毫秒时间）
+            'message'             => 'http request',                                                                           // 描述
+            'transceived_traffic' => $requestLen + strlen($response) + $fileLen,                                               // 收发流量
+            'run_time'            => $runTime,                                                                                 // 运行时长
+            'ip'                  => $request->getRealIp($safe_mode = true) ?? '',                                             // 请求客户端IP
+            'url'                 => $request->fullUrl() ?? '',                                                                // 请求URL
+            'method'              => $request->method() ?? '',                                                                 // 请求方法
+            'request_param'       => $request->all() ?? [],                                                                    // 请求参数
+            'request_header'      => $request->header() ?? [],                                                                 // 请求头
+            'cookie'              => $request->cookie() ?? [],                                                                 // 请求cookie
+            'session'             => $request->session()->all() ?? [],                                                         // 请求session
+            'response_code'       => $response->getStatusCode() ?? '',                                                         // 响应码
+            'response_header'     => $response->getHeaders() ?? [],                                                            // 响应头
+            'response_body'       => $body ?? [],                                                                              // 响应数据
+            'sql'                 => $sqlLogsAll ?? [],                                                                        // 运行SQL
+            'redis'               => $redisLogsAll ?? [],                                                                      // 运行Redis
         ];
 
         // 记录详细请求日志

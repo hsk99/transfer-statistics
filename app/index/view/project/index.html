@@ -45,6 +45,13 @@
         .open-skin {
             background-color: #3f3f3f !important;
         }
+
+        .table-tr-selected-bg-ip,
+        .table-tr-selected-bg-transfer,
+        .table-tr-selected-bg-code {
+            background-color: #6189a7 !important;
+            color: #FFF;
+        }
     </style>
 </head>
 
@@ -228,68 +235,13 @@
                         </ul>
                         <div class="layui-tab-content">
                             <div class="layui-tab-item layui-show">
-                                <table class="layui-table" lay-filter="ipStatistic">
-                                    <thead>
-                                        <tr>
-                                            <th lay-data="{field:'ip',sort:true,minWidth:130}">IP</th>
-                                            <th lay-data="{field:'count',sort:true,minWidth:90}">请求数</th>
-                                            <th lay-data="{field:'averageCost',sort:true,minWidth:90}">平均耗时（ms）</th>
-                                            <th lay-data="{field:'error',sort:true,minWidth:90}">异常数</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {foreach name='ipStatistic' item="vo"}
-                                        <tr>
-                                            <td>{$vo.ip}</td>
-                                            <td>{$vo.count}</td>
-                                            <td>{$vo.average_cost}</td>
-                                            <td>{$vo.error_count}</td>
-                                        </tr>
-                                        {/foreach}
-                                    </tbody>
-                                </table>
+                                <div id="ipStatistic"></div>
                             </div>
                             <div class="layui-tab-item">
-                                <table class="layui-table" lay-filter="transferStatistic">
-                                    <thead>
-                                        <tr>
-                                            <th lay-data="{field:'transfer',sort:true,minWidth:320}">调用</th>
-                                            <th lay-data="{field:'count',sort:true,minWidth:90}">请求数</th>
-                                            <th lay-data="{field:'averageCost',sort:true,minWidth:90}">平均耗时（ms）</th>
-                                            <th lay-data="{field:'error',sort:true,minWidth:90}">异常数</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {foreach name='transferStatistic' item="vo"}
-                                        <tr>
-                                            <td>{$vo.transfer}</td>
-                                            <td>{$vo.count}</td>
-                                            <td>{$vo.average_cost}</td>
-                                            <td>{$vo.error_count}</td>
-                                        </tr>
-                                        {/foreach}
-                                    </tbody>
-                                </table>
+                                <div id="transferStatistic"></div>
                             </div>
                             <div class="layui-tab-item">
-                                <table class="layui-table" lay-filter="codeStatistic">
-                                    <thead>
-                                        <tr>
-                                            <th lay-data="{field:'code',sort:true,minWidth:320}">状态码</th>
-                                            <th lay-data="{field:'count',sort:true,minWidth:90}">请求数</th>
-                                            <th lay-data="{field:'averageCost',sort:true,minWidth:90}">平均耗时（ms）</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {foreach name='codeStatistic' item="vo"}
-                                        <tr>
-                                            <td>{$vo.code}</td>
-                                            <td>{$vo.count}</td>
-                                            <td>{$vo.average_cost}</td>
-                                        </tr>
-                                        {/foreach}
-                                    </tbody>
-                                </table>
+                                <div id="codeStatistic"></div>
                             </div>
                         </div>
                     </div>
@@ -301,20 +253,8 @@
     <div class="layui-row layui-col-space12">
         <blockquote class="layui-elem-quote overview-title">调用IP</blockquote>
         <div class="layui-col-md3">
-            <div class="layui-panel" style="height: 550px; overflow: hidden auto;">
-                <ul class="layui-menu" id="ipList">
-                    {foreach name='ipStatistic' item="vo""}
-                    <li lay-options="{id: {$vo.id}}" ip="{$vo.ip}">
-                        <div class=" layui-menu-body-title">
-                            {$vo.ip}
-                        </div>
-                    </li>
-                    <li class="layui-menu-item-divider"></li>
-                    {/foreach}
-                </ul>
-            </div>
+            <div id="ipList" lay-filter="ipList"></div>
         </div>
-
         <div class="layui-col-md9">
             <div style="width: 100%;height: 550px;" id="ipIframe">
             </div>
@@ -324,20 +264,8 @@
     <div class="layui-row layui-col-space12">
         <blockquote class="layui-elem-quote overview-title">调用入口</blockquote>
         <div class="layui-col-md3">
-            <div class="layui-panel" style="height: 550px; overflow: hidden auto;">
-                <ul class="layui-menu" id="transferList">
-                    {foreach name='transferStatistic' item="vo""}
-                    <li lay-options="{id: {$vo.id}}" transfer="{$vo.transfer}">
-                        <div class=" layui-menu-body-title">
-                            {$vo.transfer}
-                        </div>
-                    </li>
-                    <li class="layui-menu-item-divider"></li>
-                    {/foreach}
-                </ul>
-            </div>
+            <div id="transferList" lay-filter="transferList"></div>
         </div>
-
         <div class="layui-col-md9">
             <div style="width: 100%;height: 550px;" id="transferIframe">
             </div>
@@ -347,20 +275,8 @@
     <div class="layui-row layui-col-space12">
         <blockquote class="layui-elem-quote overview-title">状态码</blockquote>
         <div class="layui-col-md3">
-            <div class="layui-panel" style="height: 550px; overflow: hidden auto;">
-                <ul class="layui-menu" id="codeList">
-                    {foreach name='codeStatistic' item="vo""}
-                    <li lay-options="{id: {$vo.id}}" code="{$vo.code}">
-                        <div class=" layui-menu-body-title">
-                            {$vo.code}
-                        </div>
-                    </li>
-                    <li class="layui-menu-item-divider"></li>
-                    {/foreach}
-                </ul>
-            </div>
+            <div id="codeList" lay-filter="codeList"></div>
         </div>
-
         <div class="layui-col-md9">
             <div style="width: 100%;height: 550px;" id="codeIframe">
             </div>
@@ -615,44 +531,300 @@
             }
 
             // IP统计
-            table.init('ipStatistic', {
-                limit: Number.MAX_VALUE,
-                height: 500,
+            table.render({
+                elem: '#ipStatistic',
+                even: true,
+                height: 600,
+                loading: true,
+                url: "/{:request()->app}/project/ipStatistic?{:http_build_query(['date' => $date, 'project' => $project])}",
+                method: 'POST',
+                page: true,
+                limit: 10,
+                parseData: function (params) {
+                    return {
+                        "code": params.code,
+                        "msg": params.msg,
+                        "count": params.data.total,
+                        "data": params.data.data
+                    };
+                },
+                request: {
+                    pageName: 'page',
+                    limitName: 'limit'
+                },
+                response: {
+                    statusCode: 200
+                },
+                toolbar: true,
+                defaultToolbar: [{
+                    title: '刷新',
+                    layEvent: 'refresh',
+                    icon: 'layui-icon-refresh',
+                }, 'filter', 'print', 'exports'],
+                cols: [[
+                    {
+                        field: 'ip',
+                        title: 'IP',
+                        minWidth: 150
+                    },
+                    {
+                        field: 'count',
+                        title: '请求数',
+                        minWidth: 150
+                    },
+                    {
+                        field: 'average_cost',
+                        title: '平均耗时（ms）',
+                        minWidth: 150
+                    },
+                    {
+                        field: 'error_count',
+                        title: '异常数',
+                        minWidth: 150
+                    }
+                ]]
             });
 
             // 调用统计
-            table.init('transferStatistic', {
-                limit: Number.MAX_VALUE,
-                height: 500,
+            table.render({
+                elem: '#transferStatistic',
+                even: true,
+                height: 600,
+                loading: true,
+                url: "/{:request()->app}/project/transferStatistic?{:http_build_query(['date' => $date, 'project' => $project])}",
+                method: 'POST',
+                page: true,
+                limit: 10,
+                parseData: function (params) {
+                    return {
+                        "code": params.code,
+                        "msg": params.msg,
+                        "count": params.data.total,
+                        "data": params.data.data
+                    };
+                },
+                request: {
+                    pageName: 'page',
+                    limitName: 'limit'
+                },
+                response: {
+                    statusCode: 200
+                },
+                toolbar: true,
+                defaultToolbar: [{
+                    title: '刷新',
+                    layEvent: 'refresh',
+                    icon: 'layui-icon-refresh',
+                }, 'filter', 'print', 'exports'],
+                cols: [[
+                    {
+                        field: 'transfer',
+                        title: '调用',
+                        minWidth: 300
+                    },
+                    {
+                        field: 'count',
+                        title: '请求数',
+                        minWidth: 100
+                    },
+                    {
+                        field: 'average_cost',
+                        title: '平均耗时（ms）',
+                        minWidth: 100
+                    },
+                    {
+                        field: 'error_count',
+                        title: '异常数',
+                        minWidth: 100
+                    }
+                ]]
             });
 
             // 状态码统计
-            table.init('codeStatistic', {
-                limit: Number.MAX_VALUE,
-                height: 500,
-            });
-
-            // 调用入口
-            dropdown.on('click(transferList)', function (options) {
-                var transfer = $(this).attr('transfer');
-                var url = "/{:request()->app}/project/transfer?{:http_build_query(['date' => $date, 'project' => $project])}&transfer=" + escape(transfer);
-
-                $("#transferIframe").html(`<iframe src="` + url + `" width="100%" height="100%" style="border: none;"></iframe>`);
+            table.render({
+                elem: '#codeStatistic',
+                even: true,
+                height: 600,
+                loading: true,
+                url: "/{:request()->app}/project/codeStatistic?{:http_build_query(['date' => $date, 'project' => $project])}",
+                method: 'POST',
+                page: true,
+                limit: 10,
+                parseData: function (params) {
+                    return {
+                        "code": params.code,
+                        "msg": params.msg,
+                        "count": params.data.total,
+                        "data": params.data.data
+                    };
+                },
+                request: {
+                    pageName: 'page',
+                    limitName: 'limit'
+                },
+                response: {
+                    statusCode: 200
+                },
+                toolbar: true,
+                defaultToolbar: [{
+                    title: '刷新',
+                    layEvent: 'refresh',
+                    icon: 'layui-icon-refresh',
+                }, 'filter', 'print', 'exports'],
+                cols: [[
+                    {
+                        field: 'code',
+                        title: '状态码',
+                        minWidth: 150
+                    },
+                    {
+                        field: 'count',
+                        title: '请求数',
+                        minWidth: 150
+                    },
+                    {
+                        field: 'average_cost',
+                        title: '平均耗时（ms）',
+                        minWidth: 150
+                    }
+                ]]
             });
 
             // 调用IP
-            dropdown.on('click(ipList)', function (options) {
-                var ip = $(this).attr('ip');
-                var url = "/{:request()->app}/project/ip?{:http_build_query(['date' => $date, 'project' => $project])}&ip=" + escape(ip);
+            table.render({
+                elem: '#ipList',
+                height: 550,
+                loading: true,
+                url: "/{:request()->app}/project/ipStatistic?{:http_build_query(['date' => $date, 'project' => $project])}",
+                method: 'POST',
+                page: {
+                    layout: ['count', 'prev', 'next', 'skip']
+                },
+                limit: 10,
+                parseData: function (params) {
+                    return {
+                        "code": params.code,
+                        "msg": params.msg,
+                        "count": params.data.total,
+                        "data": params.data.data
+                    };
+                },
+                request: {
+                    pageName: 'page',
+                    limitName: 'limit'
+                },
+                response: {
+                    statusCode: 200
+                },
+                toolbar: false,
+                cols: [[
+                    {
+                        field: 'ip',
+                        title: 'IP',
+                        minWidth: 150
+                    }
+                ]]
+            });
+            table.on('row(ipList)', function (obj) {
+                var load = layer.load();
+                setTimeout(function () { layer.close(load); }, 1000);
+                
+                $('.table-tr-selected-bg-ip').removeClass('table-tr-selected-bg-ip');
+                $(obj.tr).addClass('table-tr-selected-bg-ip');
 
+                var url = "/{:request()->app}/project/ip?{:http_build_query(['date' => $date, 'project' => $project])}&ip=" + escape(obj.data.ip);
                 $("#ipIframe").html(`<iframe src="` + url + `" width="100%" height="100%" style="border: none;"></iframe>`);
             });
 
-            // 状态码
-            dropdown.on('click(codeList)', function (options) {
-                var code = $(this).attr('code');
-                var url = "/{:request()->app}/project/code?{:http_build_query(['date' => $date, 'project' => $project])}&code=" + escape(code);
+            // 调用入口
+            table.render({
+                elem: '#transferList',
+                height: 550,
+                loading: true,
+                url: "/{:request()->app}/project/transferStatistic?{:http_build_query(['date' => $date, 'project' => $project])}",
+                method: 'POST',
+                page: {
+                    layout: ['count', 'prev', 'next', 'skip']
+                },
+                limit: 10,
+                parseData: function (params) {
+                    return {
+                        "code": params.code,
+                        "msg": params.msg,
+                        "count": params.data.total,
+                        "data": params.data.data
+                    };
+                },
+                request: {
+                    pageName: 'page',
+                    limitName: 'limit'
+                },
+                response: {
+                    statusCode: 200
+                },
+                toolbar: false,
+                cols: [[
+                    {
+                        field: 'transfer',
+                        title: '调用',
+                        minWidth: 150
+                    }
+                ]]
+            });
+            table.on('row(transferList)', function (obj) {
+                var load = layer.load();
+                setTimeout(function () { layer.close(load); }, 1000);
 
+                $('.table-tr-selected-bg-transfer').removeClass('table-tr-selected-bg-transfer');
+                $(obj.tr).addClass('table-tr-selected-bg-transfer');
+
+                var url = "/{:request()->app}/project/transfer?{:http_build_query(['date' => $date, 'project' => $project])}&transfer=" + escape(obj.data.transfer);
+                $("#transferIframe").html(`<iframe src="` + url + `" width="100%" height="100%" style="border: none;"></iframe>`);
+            });
+
+            // 状态码
+            table.render({
+                elem: '#codeList',
+                height: 550,
+                loading: true,
+                url: "/{:request()->app}/project/codeStatistic?{:http_build_query(['date' => $date, 'project' => $project])}",
+                method: 'POST',
+                page: {
+                    layout: ['count', 'prev', 'next', 'skip']
+                },
+                limit: 10,
+                parseData: function (params) {
+                    return {
+                        "code": params.code,
+                        "msg": params.msg,
+                        "count": params.data.total,
+                        "data": params.data.data
+                    };
+                },
+                request: {
+                    pageName: 'page',
+                    limitName: 'limit'
+                },
+                response: {
+                    statusCode: 200
+                },
+                toolbar: false,
+                cols: [[
+                    {
+                        field: 'code',
+                        title: '调用',
+                        minWidth: 150
+                    }
+                ]]
+            });
+            table.on('row(codeList)', function (obj) {
+                var load = layer.load();
+                setTimeout(function () { layer.close(load); }, 1000);
+
+                $('.table-tr-selected-bg-code').removeClass('table-tr-selected-bg-code');
+                $(obj.tr).addClass('table-tr-selected-bg-code');
+
+                var url = "/{:request()->app}/project/code?{:http_build_query(['date' => $date, 'project' => $project])}&code=" + escape(obj.data.code);
                 $("#codeIframe").html(`<iframe src="` + url + `" width="100%" height="100%" style="border: none;"></iframe>`);
             });
 

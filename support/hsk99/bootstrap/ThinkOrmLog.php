@@ -25,12 +25,12 @@ class ThinkOrmLog implements \Webman\Bootstrap
                 }
 
                 $sqlLog = [
-                    'worker'   => $worker->name,                                     // 运行进程
-                    'time'     => date('Y-m-d H:i:s.', $time) . substr($time, 11),   // 请求时间（包含毫秒时间）
-                    'message'  => 'sql log',                                         // 描述
-                    'sql'      => trim($sql),                                        // SQL语句
-                    'run_time' => $runtime * 1000 .'ms',                             // 运行时长
-                    'master'   => $master,                                           // 主从标识
+                    'worker'   => $worker->name,                                          // 运行进程
+                    'time'     => date('Y-m-d H:i:s.', (int)$time) . substr($time, 11),   // 请求时间（包含毫秒时间）
+                    'message'  => 'sql log',                                              // 描述
+                    'sql'      => trim($sql),                                             // SQL语句
+                    'run_time' => $runtime * 1000 . 'ms',                                 // 运行时长
+                    'master'   => $master,                                                // 主从标识
                 ];
 
                 \support\Log::channel('sql')->debug('', $sqlLog);
